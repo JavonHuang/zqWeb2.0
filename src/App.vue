@@ -34,11 +34,11 @@ html,body{
     }
   }
 }
-.el-button{
-  padding: 7px 20px;
-  font-weight: normal;
-}
-.row-block{
-  margin: 10px 0;
-}
+  .el-button{
+    padding: 7px 20px!important;
+    font-weight: normal!important;
+  }
+  .row-block{
+    margin: 10px 0;
+  }
 </style>

@@ -7,12 +7,14 @@
             <el-option v-for="item in zqList" :label="item.SECURITY_NAME" :value="item.SECURITY_CODE" :key="item.SECURITY_CODE"></el-option>
           </el-select>
         </el-form-item>
-        <el-date-picker
-          v-model="formInfo.TRADE_DATE"
-          value-format="yyyy-MM-dd"
-          type="date"
-          placeholder="选择日期">
-        </el-date-picker>
+        <el-form-item label="时间">
+          <el-date-picker
+            v-model="formInfo.TRADE_DATE"
+            value-format="yyyy-MM-dd"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="synchrodata">更新</el-button>
           <el-button type="primary" @click="onSubmit">查询</el-button>

@@ -1,17 +1,25 @@
-
 export default {
   name: 'HsTableColumn',
   props: {
     type: {
       type: String,
-      default: 'default'
+      default: 'text'
     },
     width: {},
-    prop: {},
-    name: {}
+    data: {},
+    title: {},
+    readOnly: {
+      type: Boolean | String,
+      default: true
+    },
+    renderCellFormat: {}
   },
-  render () {
-    // slots 也要渲染，需要计算合并表头
-    return null
+  data () {
+    return {
+      vnode: []
+    }
+  },
+  render (h) {
+    return h()
   }
 }
