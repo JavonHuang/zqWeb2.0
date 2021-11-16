@@ -1,15 +1,16 @@
 <template>
 <div class="mymain">
   <div class="tablemain">
-    <pageHandsontable :url="'/gzList/getGzList'">
-      <HsTableColumn type="text" data="TRADE_DATE" readOnly="true" title="交易日期" width="120" :renderCellFormat="renderCellFormatTime"></HsTableColumn>
-      <HsTableColumn type="text" data="SECURITY_CODE" readOnly="true" title="证券代码" width="120"></HsTableColumn>
-      <HsTableColumn type="text" data="CLOSE_PRICE" readOnly="true" title="当日收盘价" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="CHANGE_RATE" readOnly="true" title="涨幅" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="A_SHARES_RATIO" readOnly="true" title="A股占比" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="HOLD_SHARES" readOnly="true" title="持股数量" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="HOLD_MARKET_CAP" readOnly="true" title="当日市值(亿)" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="HOLD_MARKET_CAP_1" readOnly="true" title="操作" width="200" :renderCellFormat="renderCellFormat"></HsTableColumn>
+    <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
+      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" :renderHeader="renderHeader" :renderCellFormat="renderCellFormatTime"></HsTableColumn>
+      <HsTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="证券代码" width="120"></HsTableColumn>
+      <HsTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="当日收盘价" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="CHANGE_RATE" :readOnly="true" title="涨幅" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="A股占比" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="持股数量" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="当日市值(亿)" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="图片" width="180" :renderCellFormat="renderCellImgFormat"></HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_MARKET_CAP_1" :readOnly="true" title="操作" width="200" :renderCellFormat="renderCellFormat"></HsTableColumn>
     </pageHandsontable>
   </div>
 </div>
@@ -18,7 +19,7 @@
 <script>
 import pageHandsontable from '../components/table/pageHandsontable.vue'
 import HsTableColumn from '../components/table/hs-table-column'
-import tes from './tes.vue'
+import operate from './operate.vue'
 import moment from 'moment'
 export default {
   name: 'bda-handsontable',
@@ -37,14 +38,24 @@ export default {
     handleClick (e) {
       console.log(e)
     },
-    renderCellFormat (rowdata) {
+    renderCellFormat (rowdata, row, indexData, hot) {
       return (
-        <tes row={rowdata}></tes>
+        <operate rowdata={rowdata} row={row} indexData={indexData} hot={hot}></operate>
       )
     },
     renderCellFormatTime (rowdata, indexData) {
       return (
         <span>{moment(rowdata[indexData]).format('YYYY-MM-DD')}</span>
+      )
+    },
+    renderCellImgFormat () {
+      return (
+        <img style={{ height: '40px', width: '40px' }} src={require('./../assets/yt.jpeg')}/>
+      )
+    },
+    renderHeader (col, hot) {
+      return (
+        <span>78778</span>
       )
     }
   }

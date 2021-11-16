@@ -1,6 +1,6 @@
 <template>
   <div class="hs-page-handsontable">
-    <Handsontable ref="handsontableDom">
+    <Handsontable v-bind="$attrs" v-on="$listeners" ref="handsontableDom">
       <slot v-for="item in slotList" :slot="item" :name="item"></slot>
     </Handsontable>
     <el-pagination

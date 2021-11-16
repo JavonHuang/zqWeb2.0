@@ -7,11 +7,14 @@
 <script>
 export default {
   props: {
-    row: null
+    rowdata: null,
+    row: null,
+    indexData: null,
+    hot: null
   },
   methods: {
     handelClick () {
-      console.log(this.row)
+      console.log(this.rowdata, this.row, this.indexData, this.hot)
     }
   }
 }

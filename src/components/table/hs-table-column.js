@@ -7,12 +7,22 @@ export default {
     },
     width: {},
     data: {},
-    title: {},
-    readOnly: {
-      type: Boolean | String,
-      default: true
+    title: {
+      type: String,
+      default: null
     },
-    renderCellFormat: {}
+    readOnly: {
+      type: Boolean,
+      default: false
+    },
+    renderHeader: {
+      type: Function,
+      default: (col, hot) => {}
+    },
+    renderCellFormat: {
+      type: Function,
+      default: (rowData, row, data, hot) => {}
+    }
   },
   data () {
     return {

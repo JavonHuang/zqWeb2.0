@@ -16,7 +16,8 @@ export default {
         const that = this
         if (newVal.default) {
           const columnList = []
-          newVal.default.forEach(item => {
+          const hscolumnListMap = {}
+          newVal.default.forEach((item, index) => {
             if (item.componentOptions.propsData.renderCellFormat) {
               columnList.push({
                 ...item.componentOptions.propsData,
@@ -29,10 +30,12 @@ export default {
                 ...item.componentOptions.propsData
               })
             }
+            hscolumnListMap[index] = item.componentOptions.propsData.title
           })
-          this.hscolumnList = columnList
-          this.nestedHeadersColumnName = columnList.map(item => item.title)
-          this.initDom()
+          that.hscolumnList = columnList
+          that.hscolumnListMap = hscolumnListMap
+          that.nestedHeadersColumnName = columnList.map(item => item.title)
+          that.initDom()
         }
       },
       immediate: true
@@ -50,7 +53,8 @@ export default {
       // 表格size
     },
     rowHeights: {
-      type: Number,
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Number | String,
       default: 30
       // 表格行高
     },
@@ -76,13 +80,6 @@ export default {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Boolean | Function,
       default: true
-      // 显示表头函数可自定义columns.title不要设置
-      // colHeaders: function (col) {
-      //   switch (col) {
-      //     case 0:
-      //       return '67890'
-      //   }
-      // },
     },
     fixedRowsTop: {
       type: Number,
@@ -105,6 +102,7 @@ export default {
       hot: null,
       hotDom: null,
       hscolumnList: [],
+      hscolumnListMap: {},
       nestedHeadersColumnName: []
     }
   },
@@ -127,11 +125,12 @@ export default {
         language: 'zh-CN', // 设置语言
         data: [],
         ...that.$props,
+        colHeaders: that.colHeaders,
         columns: that.hscolumnList,
         currentRowClassName: 'currentSelRow',
         search: true,
         licenseKey: 'non-commercial-and-evaluation',
-        nestedHeaders: null
+        nestedHeaders: null,
         // nestedHeaders: [
         // ['A', { label: 'B', colspan: 5 }, 'C89'],
         // ['D', { label: 'E', colspan: 2 }, { label: 'F', colspan: 3 }, 'G'],
@@ -139,7 +138,13 @@ export default {
         // ['H', { label: 'I', colspan: 2 }, { label: 'J', colspan: 2 }, { label: 'K', colspan: 2 }, { label: 'L', colspan: 2 }, 'M'],
         // ['N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
         // ]
+        comments: true,
+        cell: [
+          { row: 1, col: 1, comment: { value: 'Some comment' } },
+          { row: 2, col: 2, comment: { value: 'More comments' } }
+        ]
       })
+      console.log(that.hot)
     },
     renderCellFormat (instance, td, row, col, prop, value, cellProperties, item) {
       const that = this
@@ -151,7 +156,7 @@ export default {
           td.classList.add(clName)
         })
         td.appendChild(deidom)
-        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, item.componentOptions.propsData.data)
+        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, item.componentOptions.propsData.data, that.hot)
         new Vue({
           render: function (createElement) {
             return createElement(
@@ -162,6 +167,29 @@ export default {
         }).$mount(deidom)
       }
       return td
+    },
+    colHeaders (col) {
+      const that = this
+      if (!that.hscolumnListMap[col]) {
+        const domId = `${that.hscolumnList[col].data}_${col}`
+        setTimeout(() => {
+          new Vue({
+            render: function (createElement) {
+              return createElement(
+                'div',
+                [that.hscolumnList[col].renderHeader()]
+              )
+            }
+          }).$mount(`#${domId}`)
+        })
+        return `<div id="${domId}"></div>`
+      }
+      return false
+    },
+    // 更新表格数据
+    setDataAtCell (rowIndex, cellIndex, value, source = null) {
+      const that = this
+      that.hot.setDataAtCell(rowIndex, cellIndex, value, source)
     }
   }
 }
