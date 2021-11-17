@@ -13,8 +13,10 @@ Vue.use(ElementUI)
 const { registerLanguageDictionary, zhCN } = require('handsontable/i18n')
 registerLanguageDictionary(zhCN)
 
-// eslint-disable-next-line import/first
 import appServer from './services/appServer'
+
+import $ from 'jquery'
+Vue.prototype.$ = $
 
 Vue.config.productionTip = false
 
