@@ -21,7 +21,7 @@ export default {
     },
     renderCellFormat: {
       type: Function,
-      default: (rowData, row, data, hot) => {}
+      default: (rowData, row, col, data, hot) => {}
     }
   },
   data () {

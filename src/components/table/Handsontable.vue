@@ -21,11 +21,9 @@ export default {
           newVal.default.forEach((item, index) => {
             let _item = {}
             if(item.componentOptions.propsData.type ==='seletextction'){
-              item.componentOptions.propsData.type = 'text'
+              item.componentOptions.propsData.type = 'checkbox'
               item.componentOptions.propsData.data = 'seletextction'
-              item.componentOptions.propsData.readOnly = true
               item.componentOptions.propsData.renderHeader = that.seletextctionRenderHeader
-              item.componentOptions.propsData.renderCellFormat = that.seletextctionRenderCellFormat
             }
             if (item.componentOptions.propsData.renderCellFormat) {
               _item = {
@@ -100,6 +98,11 @@ export default {
       default: 0
       // 列数 //固定左侧多少列不能水平滚动
     },
+    fillHandle:{
+      type: Boolean,
+      default: false
+      // 允许填充
+    },
     contextMenu: {
       type: Boolean,
       default: true
@@ -113,7 +116,8 @@ export default {
       hscolumnList: [],
       hscolumnListMap: {},
       nestedHeadersColumnName: [],
-      selectAll: false
+      selectAll: false,
+      selectInputDom: null
     }
   },
   created () {
@@ -153,6 +157,24 @@ export default {
         },
         afterChange:function(changes){
           console.log(changes)
+          // 设置全选、半选、全不选
+          if(that.hot && that.selectInputDom){
+            const list = that.hot.getSourceData()
+            const hasFalse = list.find(item=>!item.seletextction)
+            const hasTrue = list.find(item=>item.seletextction)
+            if(hasFalse && hasTrue){
+              that.selectAll = false
+              that.selectInputDom.indeterminate = true
+            } else if(hasFalse && !hasTrue){
+              that.selectAll = false
+              that.selectInputDom.indeterminate = false
+              that.selectInputDom.checked = false
+            }else if(!hasFalse && hasTrue){
+              that.selectAll = true
+              that.selectInputDom.indeterminate = false
+              that.selectInputDom.checked = true
+            }
+          }
         },
         beforeLoadData:function(sourceData, initialLoad, source){
           sourceData.forEach(item=>{
@@ -166,39 +188,48 @@ export default {
             appDom.innerHTML = ''
             const deidom = document.createElement('div')
             appDom.appendChild(deidom)
-              new Vue({
-              render: function (createElement) {
-                return createElement(
-                  'div',
-                  [that.hscolumnList[col].renderHeader(col, that.hot)]
-                )
+            const VNode = that.hscolumnList[col].renderHeader(col, that.hot)
+            if (typeof VNode ==='string'){
+              deidom.innerHTML = VNode
+              if(that.hscolumnList[col].data =='seletextction'){
+                that.seletextctionDomInit(deidom)
               }
-            }).$mount(deidom)
+            }else{
+              new Vue({
+                render: function (createElement) {
+                  return createElement(
+                    'div',
+                    [that.hscolumnList[col].renderHeader(col, that.hot)]
+                  )
+                }
+              }).$mount(deidom)
+            }
           }
         }
       })
     },
     seletextctionRenderHeader (col, hot) {
-       return (
-        <el-checkbox v-on:change={this.selectAllChange} v-model={this.selectAll}></el-checkbox>
-      )
-    },
-    selectAllChange (e) {
       const that = this
-      that.selectAll = e
-      const list = that.hot.getSourceData()
-      that.hot.loadData(list)
+      if(that.selectAll){
+        return `<input class="htCheckboxRendererInput" type="checkbox" autocomplete="false" checked>`
+      }else{
+        return `<input class="htCheckboxRendererInput" type="checkbox" autocomplete="false">`
+      }
     },
-    seletextctionRenderCellFormat (rowdata, row, indexData, hot) {
-      return (
-        <el-checkbox v-model={rowdata[indexData]}></el-checkbox>
-      )
+    seletextctionDomInit (dom) {
+      const that = this
+      that.selectInputDom = dom.querySelector('input')
+      that.selectInputDom.addEventListener('change', function(e){
+        that.selectAll = e.target.checked
+        const list = that.hot.getSourceData()
+        that.hot.loadData(list)
+      },false)
     },
     renderCellFormat (instance, td, row, col, prop, value, cellProperties, item) {
       const that = this
       const rowData = instance.getSourceDataAtRow(row)
       if (item.componentOptions.propsData.renderCellFormat) {
-        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, item.componentOptions.propsData.data, that.hot)
+        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, col,item.componentOptions.propsData.data, that.hot)
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
         that.className.forEach(clName => {
