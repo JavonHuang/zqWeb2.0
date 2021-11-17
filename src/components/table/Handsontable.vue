@@ -9,6 +9,7 @@
 <script>
 import Vue from 'vue'
 import Handsontable from 'handsontable'
+import elCheckEditor from './custom-editors'
 export default {
   watch: {
     $slots: {
@@ -18,18 +19,27 @@ export default {
           const columnList = []
           const hscolumnListMap = {}
           newVal.default.forEach((item, index) => {
+            let _item = {}
+            if(item.componentOptions.propsData.type ==='seletextction'){
+              item.componentOptions.propsData.type = 'text'
+              item.componentOptions.propsData.data = 'seletextction'
+              item.componentOptions.propsData.readOnly = true
+              item.componentOptions.propsData.renderHeader = that.seletextctionRenderHeader
+              item.componentOptions.propsData.renderCellFormat = that.seletextctionRenderCellFormat
+            }
             if (item.componentOptions.propsData.renderCellFormat) {
-              columnList.push({
+              _item = {
                 ...item.componentOptions.propsData,
                 renderer: (instance, td, row, col, prop, value, cellProperties) => {
                   return that.renderCellFormat(instance, td, row, col, prop, value, cellProperties, item)
                 }
-              })
+              }
             } else {
-              columnList.push({
+              _item = {
                 ...item.componentOptions.propsData
-              })
+              }
             }
+            columnList.push(_item)
             hscolumnListMap[index] = item.componentOptions.propsData.title
           })
           that.hscolumnList = columnList
@@ -77,8 +87,7 @@ export default {
       // 对齐样式Horizontal: htLeft, htCenter, htRight, htJustify,Vertical: htTop, htMiddle, htBottom
     },
     rowHeaders: {
-      // eslint-disable-next-line vue/require-prop-type-constructor
-      type: Boolean | Function,
+      type: Boolean,
       default: true
     },
     fixedRowsTop: {
@@ -103,7 +112,8 @@ export default {
       hotDom: null,
       hscolumnList: [],
       hscolumnListMap: {},
-      nestedHeadersColumnName: []
+      nestedHeadersColumnName: [],
+      selectAll: false
     }
   },
   created () {
@@ -125,38 +135,76 @@ export default {
         language: 'zh-CN', // 设置语言
         data: [],
         ...that.$props,
-        colHeaders: that.colHeaders,
         columns: that.hscolumnList,
         currentRowClassName: 'currentSelRow',
         search: true,
         licenseKey: 'non-commercial-and-evaluation',
-        nestedHeaders: null,
         // nestedHeaders: [
-        // ['A', { label: 'B', colspan: 5 }, 'C89'],
+        // ['A', { label: (()=> '<span>99</span>')(), colspan: 5 }, 'C89'],
         // ['D', { label: 'E', colspan: 2 }, { label: 'F', colspan: 3 }, 'G'],
         // that.nestedHeadersColumnName
-        // ['H', { label: 'I', colspan: 2 }, { label: 'J', colspan: 2 }, { label: 'K', colspan: 2 }, { label: 'L', colspan: 2 }, 'M'],
-        // ['N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
-        // ]
+        // ],
         comments: true,
         cell: [
           { row: 1, col: 1, comment: { value: 'Some comment' } },
           { row: 2, col: 2, comment: { value: 'More comments' } }
-        ]
+        ],
+        afterRenderer:function(){
+        },
+        afterChange:function(changes){
+          console.log(changes)
+        },
+        beforeLoadData:function(sourceData, initialLoad, source){
+          sourceData.forEach(item=>{
+            item['seletextction'] = that.selectAll
+          })
+          return sourceData
+        },
+        afterGetColHeader :function(col, TH){
+          const appDom = TH.querySelector('.colHeader')
+          if(col!=-1 && !that.hscolumnListMap[col] && that.hscolumnList[col].renderHeader){
+            appDom.innerHTML = ''
+            const deidom = document.createElement('div')
+            appDom.appendChild(deidom)
+              new Vue({
+              render: function (createElement) {
+                return createElement(
+                  'div',
+                  [that.hscolumnList[col].renderHeader(col, that.hot)]
+                )
+              }
+            }).$mount(deidom)
+          }
+        }
       })
-      console.log(that.hot)
+    },
+    seletextctionRenderHeader (col, hot) {
+       return (
+        <el-checkbox v-on:change={this.selectAllChange} v-model={this.selectAll}></el-checkbox>
+      )
+    },
+    selectAllChange (e) {
+      const that = this
+      that.selectAll = e
+      const list = that.hot.getSourceData()
+      that.hot.loadData(list)
+    },
+    seletextctionRenderCellFormat (rowdata, row, indexData, hot) {
+      return (
+        <el-checkbox v-model={rowdata[indexData]}></el-checkbox>
+      )
     },
     renderCellFormat (instance, td, row, col, prop, value, cellProperties, item) {
       const that = this
       const rowData = instance.getSourceDataAtRow(row)
       if (item.componentOptions.propsData.renderCellFormat) {
+        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, item.componentOptions.propsData.data, that.hot)
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
         that.className.forEach(clName => {
           td.classList.add(clName)
         })
         td.appendChild(deidom)
-        const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, item.componentOptions.propsData.data, that.hot)
         new Vue({
           render: function (createElement) {
             return createElement(
@@ -167,24 +215,6 @@ export default {
         }).$mount(deidom)
       }
       return td
-    },
-    colHeaders (col) {
-      const that = this
-      if (!that.hscolumnListMap[col]) {
-        const domId = `${that.hscolumnList[col].data}_${col}`
-        setTimeout(() => {
-          new Vue({
-            render: function (createElement) {
-              return createElement(
-                'div',
-                [that.hscolumnList[col].renderHeader()]
-              )
-            }
-          }).$mount(`#${domId}`)
-        })
-        return `<div id="${domId}"></div>`
-      }
-      return false
     },
     // 更新表格数据
     setDataAtCell (rowIndex, cellIndex, value, source = null) {

@@ -31,7 +31,7 @@ export default {
   name: 'portalmenu',
   data () {
     return {
-      isCollapse: false,
+      isCollapse: true,
       menuList: [],
       menuArray: [],
       defaultActive: null,
