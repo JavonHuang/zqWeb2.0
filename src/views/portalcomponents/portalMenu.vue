@@ -78,6 +78,12 @@ export default {
               url: '/test/handsontable',
               descr: 'table',
               parentId: 'PME20000000'
+            },
+            {
+              menuId: 'ME20000002',
+              url: '/test/handsontable2',
+              descr: 'table',
+              parentId: 'PME20000000'
             }
           ]
         }

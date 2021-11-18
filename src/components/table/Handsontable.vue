@@ -1,6 +1,17 @@
 <template>
   <div class="hs-handsontable">
-    <div id="example" class="handsontable">
+    <div class="toolbar">
+      <div><el-input placeholder="请输入内容"></el-input></div>
+      <el-dropdown trigger="click">
+        <i class="el-icon-s-grid"></i>
+        <el-dropdown-menu class="handsontable-hide-column" slot="dropdown">
+          <el-checkbox-group class="column-list" v-on:change="showColumnChange" v-model="showColumnList">
+            <el-checkbox :label="index*1" :key="index" v-for="(item,index) in hscolumnListMap">{{item}}</el-checkbox>
+          </el-checkbox-group>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+    <div ref="tablemain">
       <slot></slot>
     </div>
   </div>
@@ -18,6 +29,7 @@ export default {
         if (newVal.default) {
           const columnList = []
           const hscolumnListMap = {}
+          const  showColumnList = []
           newVal.default.forEach((item, index) => {
             let _item = {}
             if(item.componentOptions.propsData.type ==='seletextction'){
@@ -39,9 +51,11 @@ export default {
             }
             columnList.push(_item)
             hscolumnListMap[index] = item.componentOptions.propsData.title
+            showColumnList.push(index)
           })
           that.hscolumnList = columnList
           that.hscolumnListMap = hscolumnListMap
+          that.showColumnList = showColumnList
           that.nestedHeadersColumnName = columnList.map(item => item.title)
           that.initDom()
         }
@@ -117,7 +131,8 @@ export default {
       hscolumnListMap: {},
       nestedHeadersColumnName: [],
       selectAll: false,
-      selectInputDom: null
+      selectInputDom: null,
+      showColumnList: []
     }
   },
   created () {
@@ -135,7 +150,7 @@ export default {
         that.hot.render()
         return false
       }
-      that.hot = new Handsontable(that.$el.firstChild, {
+      that.hot = new Handsontable(that.$refs.tablemain, {
         language: 'zh-CN', // 设置语言
         data: [],
         ...that.$props,
@@ -184,7 +199,7 @@ export default {
         },
         afterGetColHeader :function(col, TH){
           const appDom = TH.querySelector('.colHeader')
-          if(col!=-1 && !that.hscolumnListMap[col] && that.hscolumnList[col].renderHeader){
+          if(col!=-1 && that.hscolumnList[col].renderHeader){
             appDom.innerHTML = ''
             const deidom = document.createElement('div')
             appDom.appendChild(deidom)
@@ -199,10 +214,11 @@ export default {
                 render: function (createElement) {
                   return createElement(
                     'div',
-                    [that.hscolumnList[col].renderHeader(col, that.hot)]
+                    [VNode]
                   )
                 }
               }).$mount(deidom)
+              that.hscolumnListMap[col] = VNode.data.attrs.title
             }
           }
         }
@@ -210,6 +226,7 @@ export default {
     },
     seletextctionRenderHeader (col, hot) {
       const that = this
+      that.hscolumnListMap[col] = "选择"
       if(that.selectAll){
         return `<input class="htCheckboxRendererInput" type="checkbox" autocomplete="false" checked>`
       }else{
@@ -224,6 +241,9 @@ export default {
         const list = that.hot.getSourceData()
         that.hot.loadData(list)
       },false)
+    },
+    showColumnChange(e){
+      const that = this
     },
     renderCellFormat (instance, td, row, col, prop, value, cellProperties, item) {
       const that = this
@@ -283,9 +303,20 @@ export default {
       }
     }
   }
-  .pagination{
-    border:none;
-    border-top: 1px solid #ccc;
+  .toolbar{
+    border-bottom:1px solid #ccc;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+</style>
+<style lang="scss">
+.handsontable-hide-column{
+  padding: 10px 10px;
+  .column-list{
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

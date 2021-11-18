@@ -40,6 +40,14 @@ const routes = [{
       meta: {
         title: 'handsontable'
       }
+    },
+    {
+      path: '/test/handsontable2',
+      name: 'handsontable2',
+      component: resolve => require(['./../views/test2.vue'], resolve),
+      meta: {
+        title: 'handsontable'
+      }
     }
   ]
 }
