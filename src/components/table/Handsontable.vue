@@ -6,7 +6,7 @@
         <i class="el-icon-s-grid"></i>
         <el-dropdown-menu class="handsontable-hide-column" slot="dropdown">
           <el-checkbox-group class="column-list" v-on:change="showColumnChange" v-model="showColumnList">
-            <el-checkbox :label="index*1" :key="index" v-for="(item,index) in hscolumnListMap">{{item}}</el-checkbox>
+            <el-checkbox :label="item.index" :key="item.index" v-for="item in showColumnListALL">{{item.title}}</el-checkbox>
           </el-checkbox-group>
         </el-dropdown-menu>
       </el-dropdown>
@@ -30,6 +30,7 @@ export default {
           const columnList = []
           const hscolumnListMap = {}
           const  showColumnList = []
+          const showColumnListALL =[]
           newVal.default.forEach((item, index) => {
             let _item = {}
             if(item.componentOptions.propsData.type ==='seletextction'){
@@ -52,10 +53,15 @@ export default {
             columnList.push(_item)
             hscolumnListMap[index] = item.componentOptions.propsData.title
             showColumnList.push(index)
+            showColumnListALL.push({
+              index:index,
+              title:item.componentOptions.propsData.data =='seletextction'?'选择':item.componentOptions.propsData.title
+            })
           })
           that.hscolumnList = columnList
           that.hscolumnListMap = hscolumnListMap
-          that.showColumnList = showColumnList
+          that.showColumnListALL = [...showColumnListALL]
+          that.showColumnList = [...showColumnList]
           that.nestedHeadersColumnName = columnList.map(item => item.title)
           that.initDom()
         }
@@ -92,10 +98,8 @@ export default {
       // 平分列宽自适应 none|last|all
     },
     className: {
-      type: Array,
-      default: () => {
-        return ['htCenter', 'htMiddle']
-      }
+      type: String,
+      default: 'htCenter htMiddle',
       // 对齐样式Horizontal: htLeft, htCenter, htRight, htJustify,Vertical: htTop, htMiddle, htBottom
     },
     rowHeaders: {
@@ -132,7 +136,8 @@ export default {
       nestedHeadersColumnName: [],
       selectAll: false,
       selectInputDom: null,
-      showColumnList: []
+      showColumnList: [],
+      showColumnListALL:[]
     }
   },
   created () {
@@ -163,6 +168,7 @@ export default {
         // ['D', { label: 'E', colspan: 2 }, { label: 'F', colspan: 3 }, 'G'],
         // that.nestedHeadersColumnName
         // ],
+        hiddenColumns: true,
         comments: true,
         cell: [
           { row: 1, col: 1, comment: { value: 'Some comment' } },
@@ -219,6 +225,7 @@ export default {
                 }
               }).$mount(deidom)
               that.hscolumnListMap[col] = VNode.data.attrs.title
+              that.showColumnListALL[col].title = VNode.data.attrs.title
             }
           }
         }
@@ -244,6 +251,20 @@ export default {
     },
     showColumnChange(e){
       const that = this
+      let hideList = []
+      let showList = []
+      that.showColumnListALL.forEach(item=>{
+        let noExit = e.find(_item=>_item===item.index)
+        if(typeof noExit ==='undefined'){
+          hideList.push(item.index)
+        }else{
+          showList.push(item.index)
+        }
+      })
+      const plugin = that.hot.getPlugin('hiddenColumns')
+      plugin.showColumns(showList)
+      plugin.hideColumns(hideList)
+      that.hot.render()
     },
     renderCellFormat (instance, td, row, col, prop, value, cellProperties, item) {
       const that = this
@@ -252,9 +273,12 @@ export default {
         const VNode = item.componentOptions.propsData.renderCellFormat(rowData, row, col,item.componentOptions.propsData.data, that.hot)
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
-        that.className.forEach(clName => {
-          td.classList.add(clName)
-        })
+        if(that.className){
+          const classNameList = that.className.split(' ')
+          classNameList.forEach(cl=>{
+            td.classList.add(cl)
+          })
+        }
         td.appendChild(deidom)
         new Vue({
           render: function (createElement) {

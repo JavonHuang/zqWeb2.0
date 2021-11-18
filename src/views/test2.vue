@@ -8,26 +8,41 @@
 import Handsontable from 'handsontable'
 export default {
   mounted(){
-    const container = document.querySelector('#example1');
+    const container = document.getElementById('example1');
+
+    const data = [
+      { id: 1, name: '54678', address: '' },
+      { id: 2, name: '54678', address: '' },// HOT will create missing properties on demand
+      { id: 3, name: 'tugyu', address: '' }
+    ];
 
     const hot = new Handsontable(container, {
-      licenseKey: 'non-commercial-and-evaluation',
-      data: [],
+      data:[],
       colHeaders: true,
-      rowHeaders: true,
-      columns: [
-        {data: 'id'},
-        {data: 'name.first'},
-        {data: 'name.last'},
-        {data: 'address'}
-      ],
-      // enable the `HiddenColumns` plugin
-      hiddenColumns: true,
+      height: 'auto',
+      width: 'auto',
+     hiddenColumns: true,
+     columns:[
+       {
+         data: 'id',
+         title:'id'
+       },
+       {
+         data: 'name',
+         title:'name'
+       },
+       {
+         data: 'address',
+         title:'address',
+         renderer: (instance, td, row, col, prop, value, cellProperties) => {
+           td.innerHTML="567890"
+           return td
+         }
+       }
+     ],
+      licenseKey: 'non-commercial-and-evaluation'
     });
-
-    const plugin = hot.getPlugin('hiddenColumns')
-    plugin.hideColumns([1,2])
-    hot.render()
+    hot.loadData(data)
   }
 }
 </script>
