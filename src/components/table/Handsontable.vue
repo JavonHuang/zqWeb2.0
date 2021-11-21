@@ -20,7 +20,7 @@
 <script>
 import Vue from 'vue'
 import Handsontable from 'handsontable'
-import elCheckEditor from './custom-editors'
+import { createStore, mapStates } from './store/helper'
 export default {
   watch: {
     $slots: {
@@ -127,7 +127,15 @@ export default {
       // 右键菜单
     }
   },
+  computed:{
+    ...mapStates({
+      columns: 'columns'
+    })
+  },
   data () {
+    this.store = createStore(this, {
+
+    })
     return {
       hot: null,
       hotDom: null,

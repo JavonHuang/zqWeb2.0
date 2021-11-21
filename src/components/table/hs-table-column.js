@@ -24,10 +24,27 @@ export default {
       default: (rowData, row, col, data, hot) => {}
     }
   },
-  data () {
-    return {
-      vnode: []
-    }
+  computed: {
+    owner() {
+      let parent = this.$parent;
+      // while (parent && !parent.tableId) {
+      //   parent = parent.$parent;
+      // }
+      return parent;
+    },
+  },
+
+  mounted() {
+    const owner = this.owner;
+    // owner.store.commit('insertColumn', this);
+  },
+  // data () {
+  //   return {
+  //     vnode: []
+  //   }
+  // },
+  created(){
+    console.log(this)
   },
   render (h) {
     return h()

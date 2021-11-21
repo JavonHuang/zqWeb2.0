@@ -2,7 +2,7 @@
 <div class="mymain">
   <div class="tablemain">
     <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
-      <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" width="120"></HsTableColumn>
+      <HsTableColumn v-for="item in numles" :key="item" type="seletextction" data="SECURITY_CODE" :readOnly="false" width="120"></HsTableColumn>
       <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" :renderHeader="renderHeader" :renderCellFormat="renderCellFormatTime"></HsTableColumn>
       <HsTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120"></HsTableColumn>
       <HsTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
@@ -30,10 +30,12 @@ export default {
   },
   data () {
     return {
-      test: null
+      test: null,
+      numles:0
     }
   },
   mounted () {
+    this.numles=5
   },
   methods: {
     handleClick (e) {
