@@ -25,7 +25,7 @@
     </div>
     <jtable ref="jtable" :query="formInline" :url="'/zqList/getZqList'">
       <el-table-column prop="SECURITY_NAME" label="证券名" width="180" sortable></el-table-column>
-      <el-table-column prop="SECURITY_CODE" label="证券代码" width="180"></el-table-column>
+      <el-table-column v-for="item in testnum" :key="item" prop="SECURITY_CODE" label="证券代码" width="180"></el-table-column>
       <el-table-column prop="ZQ_TYPE" label="证券所" width="180" :formatter="(row, column, cellValue, index)=>{ return cellValue=='sh'?'上证':'深证' }">
       </el-table-column>
       <el-table-column
@@ -70,6 +70,7 @@ export default {
   },
   data () {
     return {
+      testnum:0,
       formInline: {
         SECURITY_NAME: '',
         SECURITY_CODE: '',
@@ -96,6 +97,9 @@ export default {
   },
   mounted () {
     // this.getZqList()
+    setTimeout(()=>{
+      this.testnum = 5
+    },5000)
   },
   methods: {
     onSubmit () {

@@ -12,6 +12,8 @@
       </el-dropdown>
     </div>
     <div ref="tablemain">
+    </div>
+    <div>
       <slot></slot>
     </div>
   </div>

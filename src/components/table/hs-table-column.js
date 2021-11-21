@@ -36,17 +36,21 @@ export default {
 
   mounted() {
     const owner = this.owner;
-    // owner.store.commit('insertColumn', this);
+    const children = owner.$el.children[2].children
+    const columnIndex = this.getColumnElIndex(children, this.$el)
+    console.log(children, columnIndex)
+    owner.store.commit('insertColumn', this);
   },
-  // data () {
-  //   return {
-  //     vnode: []
-  //   }
-  // },
-  created(){
-    console.log(this)
+  methods:{
+    getColumnElIndex(children, child) {
+      return [].indexOf.call(children, child);
+    },
   },
   render (h) {
-    return h()
+    return h('div',{
+      style:{
+        display:'none'
+      }
+    })
   }
 }

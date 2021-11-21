@@ -2,10 +2,10 @@
 <div class="mymain">
   <div class="tablemain">
     <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
-      <HsTableColumn v-for="item in numles" :key="item" type="seletextction" data="SECURITY_CODE" :readOnly="false" width="120"></HsTableColumn>
+      <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" width="120"></HsTableColumn>
       <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" :renderHeader="renderHeader" :renderCellFormat="renderCellFormatTime"></HsTableColumn>
-      <HsTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120"></HsTableColumn>
-      <HsTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
+      <HsTableColumn v-for="item in numles" :key="item" type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120"></HsTableColumn>
+      <HsTableColumn v-for="item in tet" :key="'yu_'+item"  type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="CHANGE_RATE" :readOnly="true" title="波动" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="占比" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="数量" width="180"></HsTableColumn>
@@ -31,11 +31,15 @@ export default {
   data () {
     return {
       test: null,
-      numles:0
+      numles:0,
+      tet:0
     }
   },
   mounted () {
-    this.numles=5
+    setTimeout(()=>{
+      this.numles=5
+      this.tet =6 
+    },5000)
   },
   methods: {
     handleClick (e) {
