@@ -2,16 +2,42 @@
 <div class="mymain">
   <div class="tablemain">
     <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
-      <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" width="120"></HsTableColumn>
-      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" :renderHeader="renderHeader" :renderCellFormat="renderCellFormatTime"></HsTableColumn>
-      <HsTableColumn v-for="item in numles" :key="item" type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120"></HsTableColumn>
-      <HsTableColumn v-for="item in tet" :key="'yu_'+item"  type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
+      <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" title="选择" width="120">
+      </HsTableColumn>
+      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" title="自定义表头" :renderHeader="renderHeader">
+        <template slot-scope="slotProps">
+          <div>
+            <div>{{renderCellFormatTime(slotProps.rowData,slotProps.column.dataIndex)}}</div>
+          </div>
+        </template>
+      </HsTableColumn>
+      <HsTableColumn v-for="item in numles" :key="item" type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120">
+        <template slot-scope="slotProps">
+          <div>
+            <div>{{slotProps.rowData.SECURITY_CODE}}</div>
+          </div>
+        </template>
+      </HsTableColumn>
+      <HsTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="CHANGE_RATE" :readOnly="true" title="波动" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="占比" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="数量" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="规模" width="180"></HsTableColumn>
-      <HsTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="图片" width="180" :renderCellFormat="renderCellImgFormat"></HsTableColumn>
-      <HsTableColumn type="text" data="HOLD_MARKET_CAP_1" :readOnly="true" title="操作" width="200" :renderCellFormat="renderCellFormat"></HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="图片" width="180">
+        <template slot-scope="slotProps">
+          <div>
+            <div>{{slotProps.rowData.SECURITY_CODE}}</div>
+            <img style="height:40px; width: '40px'" :src="require('./../assets/yt.jpeg')"/>
+          </div>
+        </template>
+      </HsTableColumn>
+      <HsTableColumn type="text" data="HOLD_MARKET_CAP_1" :readOnly="true" title="操作" width="200">
+        <template slot-scope="slotProps">
+          <div>
+            <el-button v-on:click="handelClick(slotProps)" type="text" size="small">查看</el-button>
+          </div>
+        </template>
+      </HsTableColumn>
     </pageHandsontable>
   </div>
 </div>
@@ -20,7 +46,6 @@
 <script>
 import pageHandsontable from '../components/table/pageHandsontable.vue'
 import HsTableColumn from '../components/table/hs-table-column'
-import operate from './operate.vue'
 import moment from 'moment'
 export default {
   name: 'bda-handsontable',
@@ -37,12 +62,11 @@ export default {
   },
   mounted () {
     setTimeout(()=>{
-      this.numles=5
-      this.tet =6 
+      this.numles=3
     },5000)
   },
   methods: {
-    handleClick (e) {
+    handelClick (e) {
       console.log(e)
     },
     renderCellFormat (rowdata, row, indexData, hot) {
@@ -51,18 +75,11 @@ export default {
       )
     },
     renderCellFormatTime (rowdata, indexData) {
-      return (
-        <span>{moment(rowdata[indexData]).format('YYYY-MM-DD')}</span>
-      )
-    },
-    renderCellImgFormat () {
-      return (
-        <img style={{ height: '40px', width: '40px' }} src={require('./../assets/yt.jpeg')}/>
-      )
+      return moment(rowdata[indexData]).format('YYYY-MM-DD')
     },
     renderHeader (col, hot) {
       return (
-        <span title={'自定义表头'}>自定义表头</span>
+        <span>自定义表7头</span>
       )
     }
   }

@@ -1,12 +1,19 @@
-import Vue from 'vue';
 import Watcher from './watcher';
 
 Watcher.prototype.mutations = {
   setData(states, data) {
     states._data = data
   },
-  insertColumn(states, column) {
-    states.columns.push(column)
+  insertColumn(states, column, columnIndex) {
+    let list = [...states.columns]
+    list.splice(columnIndex, 0, column)
+    list.forEach((item,index)=>{
+      item.columnIndex = index
+    })
+    states.columns = list
+  },
+  setSelectAll(states, selectAll) {
+    states.selectAll = selectAll
   }
 }
 

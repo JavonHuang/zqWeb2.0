@@ -7,6 +7,9 @@ export function createStore(table, initialState = {}) {
 
   const store = new Store();
   store.table = table;
+  Object.keys(initialState).forEach(key => {
+    store.states[key] = initialState[key];
+  });
   return store;
 }
 

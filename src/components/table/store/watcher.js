@@ -5,7 +5,8 @@ export default Vue.extend({
   data() {
     return {
       states:{
-        columns: []
+        columns: [],
+        selectAll:false
       }
     }
   }
