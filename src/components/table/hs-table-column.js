@@ -31,12 +31,16 @@ export default {
   data(){
     return {
       cellNode: null,
-      hasScopedSlots:false
+      hasScopedSlots:false,
+      hasHeaderScopedSlots:false
     }
   },
   mounted() {
     if(this.$scopedSlots.default){
       this.hasScopedSlots = true
+    }
+    if(this.$scopedSlots.header){
+      this.hasHeaderScopedSlots = true
     }
     const owner = this.owner
     const children = owner.$el.children[2].children
@@ -52,6 +56,11 @@ export default {
     if(this.hasScopedSlots){
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.renderer(instance, td, row, col, prop, value, cellProperties, props)
+      }
+    }
+    if(this.hasHeaderScopedSlots){
+      props['renderHeader']= ({col,TH,columns})=>{
+        return this.$scopedSlots.header({col,TH,columns})
       }
     }
     owner.store.commit('insertColumn', props, columnIndex)
@@ -92,8 +101,7 @@ export default {
       }
       return td
     },
-    seletextctionRenderHeader (selectAll) {
-      const that = this
+    seletextctionRenderHeader ({selectAll}) {
       if(selectAll){
         return `<input class="htCheckboxRendererInput" type="checkbox" autocomplete="false" checked>`
       }else{
@@ -105,12 +113,7 @@ export default {
     return h('div',{
       style:{
         display:'none'
-      },
-      scopedSlots: {
-        default: ()=>{
-          test:980909
-        }
-      },
+      }
     })
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="hs-handsontable">
     <div class="toolbar">
-      <div><el-input placeholder="请输入内容"></el-input></div>
+      <div><input placeholder="请输入内容"/></div>
       <el-dropdown trigger="click">
         <i class="el-icon-s-grid"></i>
         <el-dropdown-menu class="handsontable-hide-column" slot="dropdown">
@@ -184,7 +184,7 @@ export default {
       if(col!=-1 && that.columns && that.columns[col].renderHeader){
         appDom.innerHTML = ''
         const deidom = document.createElement('div')
-        const VNode = that.columns[col].renderHeader(that.selectAll)
+        const VNode = that.columns[col].renderHeader({selectAll:that.selectAll,col:col,TH:TH,columns:that.columns[col]})
         appDom.appendChild(deidom)
         if (typeof VNode ==='string'){
           deidom.innerHTML = VNode

@@ -4,7 +4,12 @@
     <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
       <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" title="选择" width="120">
       </HsTableColumn>
-      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" title="自定义表头" :renderHeader="renderHeader">
+      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" title="自定义表头">
+        <template slot="header" slot-scope="slotProps">
+          <div>
+            <div>{{slotProps.columns.title}}</div>
+          </div>
+        </template>
         <template slot-scope="slotProps">
           <div>
             <div>{{renderCellFormatTime(slotProps.rowData,slotProps.column.dataIndex)}}</div>
@@ -12,6 +17,11 @@
         </template>
       </HsTableColumn>
       <HsTableColumn v-for="item in numles" :key="item" type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120">
+        <template slot="header" slot-scope="slotProps">
+          <div>
+            <div>{{slotProps.columns.title}}{{item}}</div>
+          </div>
+        </template>
         <template slot-scope="slotProps">
           <div>
             <div>{{slotProps.rowData.SECURITY_CODE}}</div>
@@ -69,18 +79,8 @@ export default {
     handelClick (e) {
       console.log(e)
     },
-    renderCellFormat (rowdata, row, indexData, hot) {
-      return (
-        <operate rowdata={rowdata} row={row} indexData={indexData} hot={hot}></operate>
-      )
-    },
     renderCellFormatTime (rowdata, indexData) {
       return moment(rowdata[indexData]).format('YYYY-MM-DD')
-    },
-    renderHeader (col, hot) {
-      return (
-        <span>自定义表7头</span>
-      )
     }
   }
 }
