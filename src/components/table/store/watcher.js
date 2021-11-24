@@ -6,6 +6,7 @@ export default Vue.extend({
     return {
       states:{
         columns: [],
+        columnsMap:{},
         selectAll:false
       }
     }

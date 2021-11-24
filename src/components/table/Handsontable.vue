@@ -23,6 +23,8 @@
 import Vue from 'vue'
 import Handsontable from 'handsontable'
 import { createStore, mapStates } from './store/helper'
+import deepList from './store/group'
+const lodash = require('lodash')
 export default {
   props: {
     width: {
@@ -80,12 +82,20 @@ export default {
       type: Boolean,
       default: true
       // 右键菜单
+    },
+    mergeCellsKey:{
+      type:Array,
+      default:()=>{
+        return []
+      }
+      //合并key依据
     }
   },
   computed:{
     ...mapStates({
       columns: 'columns',
-      selectAll:'selectAll'
+      selectAll:'selectAll',
+      columnsMap:'columnsMap'
     })
   },
   watch: {
@@ -104,13 +114,15 @@ export default {
   data () {
     this.store = createStore(this, {
       columns:[],
-      selectAll:false
+      selectAll:false,
+      columnsMap:{}
     })
     return {
       hot: null,
       nestedHeadersColumnName: [],
       selectInputDom: null,
-      showColumnList: []
+      showColumnList: [],
+      mergeCells:[]
     }
   },
   methods: {
@@ -121,7 +133,7 @@ export default {
       }
       if (that.hot) {
         that.hot.updateSettings({
-         columns:that.columns,
+          columns:that.columns
         })
         that.hot.render()
         return false
@@ -147,6 +159,7 @@ export default {
         ],
         afterChange: that.afterChange,
         beforeLoadData: that.beforeLoadData,
+        afterLoadData:that.afterLoadData,
         afterGetColHeader : that.afterGetColHeader
       })
     },
@@ -173,10 +186,25 @@ export default {
     },
     beforeLoadData(sourceData, initialLoad, source){
       const that = this
-      sourceData.forEach(item=>{
+      let list = lodash.sortBy(sourceData,that.mergeCellsKey)
+      list.forEach((item,index)=>{
         item['seletextction'] = that.selectAll
+        item['rowIndex'] = index
       })
-      return sourceData
+      let mergeCells = []
+      if(list.length>0){
+        let result = deepList(list,that.mergeCellsKey,mergeCells,that.columnsMap)
+        that.mergeCells = mergeCells
+      }
+      return list
+    },
+    afterLoadData(){
+      const that = this
+      if(that.hot){
+        that.hot.updateSettings({
+          mergeCells: that.mergeCells
+        })
+      }
     },
     afterGetColHeader(col, TH){
       const that = this;

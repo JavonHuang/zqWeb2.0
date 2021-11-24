@@ -5,12 +5,15 @@ Watcher.prototype.mutations = {
     states._data = data
   },
   insertColumn(states, column, columnIndex) {
+    let columnsMap = {}
     let list = [...states.columns]
     list.splice(columnIndex, 0, column)
     list.forEach((item,index)=>{
       item.columnIndex = index
+      columnsMap[item.data] = index
     })
     states.columns = list
+    states.columnsMap = columnsMap
   },
   setSelectAll(states, selectAll) {
     states.selectAll = selectAll

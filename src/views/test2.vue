@@ -17,7 +17,7 @@ export default {
     ];
 
     const hot = new Handsontable(container, {
-      data:[],
+      data:data,
       colHeaders: true,
       height: 'auto',
       width: 'auto',
@@ -40,6 +40,9 @@ export default {
          }
        }
      ],
+      mergeCells: [
+        { row: 1, col: 1, rowspan: 2, colspan: 1 }
+      ],
       licenseKey: 'non-commercial-and-evaluation'
     });
     hot.loadData(data)

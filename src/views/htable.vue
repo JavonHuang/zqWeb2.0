@@ -1,25 +1,13 @@
 <template>
 <div class="mymain">
   <div class="tablemain">
-    <pageHandsontable rowHeights="50" :url="'/gzList/getGzList'">
-      <HsTableColumn type="seletextction" data="SECURITY_CODE" :readOnly="false" title="选择" width="120">
-      </HsTableColumn>
-      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" title="自定义表头">
+    <pageHandsontable :mergeCellsKey="['SECURITY_CODE','CLOSE_PRICE']" rowHeights="50" :url="'/gzList/getGzList'">
+      <!-- <HsTableColumn type="seletextction" :readOnly="false" title="选择" width="120">
+      </HsTableColumn> -->
+      <HsTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120">
         <template slot="header" slot-scope="slotProps">
           <div>
             <div>{{slotProps.columns.title}}</div>
-          </div>
-        </template>
-        <template slot-scope="slotProps">
-          <div>
-            <div>{{renderCellFormatTime(slotProps.rowData,slotProps.column.dataIndex)}}</div>
-          </div>
-        </template>
-      </HsTableColumn>
-      <HsTableColumn v-for="item in numles" :key="item" type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120">
-        <template slot="header" slot-scope="slotProps">
-          <div>
-            <div>{{slotProps.columns.title}}{{item}}</div>
           </div>
         </template>
         <template slot-scope="slotProps">
@@ -29,6 +17,18 @@
         </template>
       </HsTableColumn>
       <HsTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></HsTableColumn>
+      <HsTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="120" title="日期">
+        <template slot="header" slot-scope="slotProps">
+          <div>
+            <div>{{slotProps.columns.title}}</div>
+          </div>
+        </template>
+        <template slot-scope="slotProps">
+          <div>
+            <div>{{renderCellFormatTime(slotProps.rowData,slotProps.column.data)}}</div>
+          </div>
+        </template>
+      </HsTableColumn>
       <HsTableColumn type="text" data="CHANGE_RATE" :readOnly="true" title="波动" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="占比" width="180"></HsTableColumn>
       <HsTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="数量" width="180"></HsTableColumn>
