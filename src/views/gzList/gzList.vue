@@ -69,7 +69,6 @@ export default {
       const that = this
       that.$axios.post('/gzList/synchrodata', that.formInfo, false, true).then(res => {
         if (res.data.code === '200') {
-          that.zqList = res.data.data
         }
       })
     },

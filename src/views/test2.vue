@@ -41,7 +41,7 @@ export default {
        }
      ],
       mergeCells: [
-        { row: 1, col: 1, rowspan: 2, colspan: 1 }
+        { row: 0, col: 2, rowspan: 3, colspan: 1 }
       ],
       licenseKey: 'non-commercial-and-evaluation'
     });

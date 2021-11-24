@@ -23,7 +23,7 @@
 import Vue from 'vue'
 import Handsontable from 'handsontable'
 import { createStore, mapStates } from './store/helper'
-import deepList from './store/group'
+import {deepList,deepList2} from './store/group'
 const lodash = require('lodash')
 export default {
   props: {
@@ -157,10 +157,12 @@ export default {
           { row: 1, col: 1, comment: { value: 'Some comment' } },
           { row: 2, col: 2, comment: { value: 'More comments' } }
         ],
+        mergeCells:true,
         afterChange: that.afterChange,
         beforeLoadData: that.beforeLoadData,
         afterLoadData:that.afterLoadData,
-        afterGetColHeader : that.afterGetColHeader
+        afterGetColHeader : that.afterGetColHeader,
+        afterUpdateSettings:that.afterUpdateSettings
       })
     },
     afterChange(changes){
@@ -193,18 +195,29 @@ export default {
       })
       let mergeCells = []
       if(list.length>0){
-        let result = deepList(list,that.mergeCellsKey,mergeCells,that.columnsMap)
+        deepList2(list,that.mergeCellsKey,mergeCells,that.columnsMap,0)
         that.mergeCells = mergeCells
       }
+      console.log(that.mergeCells)
       return list
     },
-    afterLoadData(){
+    afterLoadData(sourceData){
       const that = this
-      if(that.hot){
-        that.hot.updateSettings({
-          mergeCells: that.mergeCells
+      if(sourceData.length>0 && that.hot){
+        let mergeCellIntance = that.hot.getPlugin('mergeCells')
+        // mergeCellIntance.merge(0,1,19,1)
+        // merge(startRow: number, startCol: number, endRow: number, endCol): void;
+        // mergeCellIntance.merge(that.mergeCells[0].row,that.mergeCells[0].col,that.mergeCells[0].rowspan,that.mergeCells[0].colspan)
+        that.mergeCells.forEach(item=>{
+          mergeCellIntance.merge(item.startRow,item.startCol,item.endRow,item.endCol)
         })
+        // setTimeout(()=>{
+        //   that.hot.render()
+        // })
       }
+    },
+    afterUpdateSettings(){
+      const that = this
     },
     afterGetColHeader(col, TH){
       const that = this;
