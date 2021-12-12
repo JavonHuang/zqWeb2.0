@@ -1,8 +1,6 @@
 <template>
   <div class="hs-page-handsontable">
-    <Handsontable v-bind="$attrs" v-on="$listeners" ref="handsontableDom">
-      <slot v-for="item in slotList" :slot="item" :name="item"></slot>
-    </Handsontable>
+    <div id="example1"></div>
     <el-pagination
       class="pagination"
       layout="total, sizes, prev, pager, next, jumper"
@@ -16,37 +14,14 @@
 </template>
 
 <script>
-import Handsontable from './Handsontable.vue'
+import Handsontable from 'handsontable'
+const lodash = require('lodash')
+import {deepList2} from '../components/table/store/group'
 export default {
-  components: {
-    Handsontable
-  },
-  // 继承插槽
-  computed: {
-    slotList () {
-      const slotList = []
-      const slots = this.$slots
-      for (const key in slots) {
-        slotList.push(key)
-      }
-      return slotList
-    }
-  },
-  props: {
-    url: {
-      type: String,
-      default: null
-    },
-    query: {
-      type: Object,
-      default: () => {
-        return {}
-      }
-    }
-  },
   data () {
     return {
       hot: null,
+      mergeCellsKey:['SECURITY_CODE','CLOSE_PRICE','CHANGE_RATE'],
       hscolumnList: [],
       list: [],
       count: 0,
@@ -59,23 +34,45 @@ export default {
     }
   },
   mounted () {
-    if (this.$attrs['default-sort']) {
-      this.sort = {
-        order: this.$attrs['default-sort'].order === 'ascending' ? 'ASC' : ' DESC',
-        prop: this.$attrs['default-sort'].prop
-      }
-    }
-    this.getDataSource()
+    const that = this
+    const container = document.getElementById('example1')
+    that.hot = new Handsontable(container, {
+      data:[],
+      colHeaders: true,
+      height: 'auto',
+      width: 'auto',
+      hiddenColumns: true,
+      columns:[
+        {
+          data: 'SECURITY_CODE',
+          title:'代码'
+        },
+        {
+          data: 'CLOSE_PRICE',
+          title:'收盘价'
+        },
+        {
+          data: 'CHANGE_RATE',
+          title:'波动'
+        },
+        {
+          data: 'TRADE_DATE',
+          title:'日期'
+        },
+      ],
+      licenseKey: 'non-commercial-and-evaluation',
+    });
+    that.getDataSource()
   },
   methods: {
     getDataSource () {
       const that = this
-      that.$refs.handsontableDom.unmerge()
-      that.$axios.post(that.url, { sort: that.sort, currentPage: that.currentPage, pageSize: that.pageSize, ...that.query }, false, true).then(res => {
+      that.$axios.post('/gzList/getGzList', { sort: that.sort, currentPage: that.currentPage, pageSize: that.pageSize, ...that.query }, false, true).then(res => {
         if (res.data.code === '200') {
           that.list = res.data.data
-          this.count = res.data.count
-          that.$refs.handsontableDom.loadData(that.list)
+          that.count = res.data.count
+          let list = lodash.sortBy(that.list,that.mergeCellsKey)
+          that.hot.loadData(list)
         } else {
         }
       })

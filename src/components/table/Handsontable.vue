@@ -274,6 +274,19 @@ export default {
     setDataAtCell (rowIndex, cellIndex, value, source = null) {
       const that = this
       that.hot.setDataAtCell(rowIndex, cellIndex, value, source)
+    },
+    loadData(list){
+      const that = this
+      that.hot.loadData(list)
+    },
+    unmerge(){
+      const that = this
+      if(that.mergeCells.length>0 && that.hot){
+        let mergeCellIntance = that.hot.getPlugin('mergeCells')
+        that.mergeCells.forEach(item=>{
+          mergeCellIntance.unmerge(item.startRow,item.startCol,item.endRow,item.endCol)
+        })
+      }
     }
   }
 }

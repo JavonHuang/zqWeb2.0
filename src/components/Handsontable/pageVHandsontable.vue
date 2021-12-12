@@ -1,8 +1,8 @@
 <template>
-  <div class="hs-page-handsontable">
-    <Handsontable v-bind="$attrs" v-on="$listeners" ref="handsontableDom">
+  <div class="pageVHandsontable">
+    <VHandsontable v-bind="$attrs" v-on="$listeners" ref="handsontableDom">
       <slot v-for="item in slotList" :slot="item" :name="item"></slot>
-    </Handsontable>
+    </VHandsontable>
     <el-pagination
       class="pagination"
       layout="total, sizes, prev, pager, next, jumper"
@@ -16,12 +16,11 @@
 </template>
 
 <script>
-import Handsontable from './Handsontable.vue'
+import VHandsontable from './VHandsontable.vue'
 export default {
   components: {
-    Handsontable
+    VHandsontable
   },
-  // 继承插槽
   computed: {
     slotList () {
       const slotList = []
@@ -103,14 +102,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.hs-page-handsontable{
-  height: 100%;
+.pageVHandsontable{
   display: flex;
+  height: 100%;
   flex-direction: column;
-  position: relative;
+  border:1px solid #ccc;
+  box-sizing: content-box;
+  .VHandsontable{
+    flex:1;
+    margin: 0px -1px 0px 0px;
+  }
   .pagination{
-    border:1px solid #ccc;
-    border-top: none;
+    border-top:1px solid #ccc;
   }
 }
 </style>

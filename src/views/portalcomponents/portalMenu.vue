@@ -84,6 +84,18 @@ export default {
               url: '/test/handsontable2',
               descr: 'table',
               parentId: 'PME20000000'
+            },
+            {
+              menuId: 'ME20000003',
+              url: '/test/handsontable3',
+              descr: 'table3',
+              parentId: 'PME20000000'
+            },
+            {
+              menuId: 'ME20000004',
+              url: '/test/vhansontableTest',
+              descr: 'vhansontableTest',
+              parentId: 'PME20000000'
             }
           ]
         }
