@@ -1,6 +1,6 @@
 <template>
   <div class="pageVHandsontable">
-    <VHandsontable v-bind="$attrs" v-on="$listeners" ref="handsontableDom">
+    <VHandsontable v-bind="$attrs" v-on="$listeners" v-on:onColumnsSort="sortChange" ref="handsontableDom">
       <slot v-for="item in slotList" :slot="item" :name="item"></slot>
     </VHandsontable>
     <el-pagination
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import VHandsontable from './VHandsontable.vue'
+import VHandsontable from './VHandsontable'
 export default {
   components: {
     VHandsontable
@@ -92,8 +92,8 @@ export default {
     sortChange (column) {
       const that = this
       that.sort = {
-        order: column.order === 'ascending' ? 'ASC' : ' DESC',
-        prop: column.prop
+        order: column.sort,
+        prop: column.data
       }
       that.getDataSource()
     }

@@ -7,7 +7,8 @@ export default Vue.extend({
       states:{
         columns: [],
         columnsMap:{},
-        selectAll:false
+        selectAll:false,
+        columnsSort:[]
       }
     }
   }

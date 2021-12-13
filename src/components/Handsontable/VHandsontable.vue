@@ -14,6 +14,12 @@ import {deepList2} from './store/group'
 const lodash = require('lodash')
 export default {
   props:{
+    defaultSort:{
+      type:Object,
+      default:()=>{
+        return null
+      }
+    },
     width: {
       type: String,
       default: '100%'
@@ -60,13 +66,19 @@ export default {
         return []
       }
       //合并key依据
-    }
+    },
+    //列宽拖动
+    manualColumnResize:{
+      type: Boolean,
+      default: false
+    },
   },
   computed:{
     ...mapStates({
       columns: 'columns',
       selectAll:'selectAll',
-      columnsMap:'columnsMap'
+      columnsMap:'columnsMap',
+      columnsSort:'columnsSort'
     })
   },
   watch: {
@@ -76,13 +88,22 @@ export default {
           this.initComponent()
         }
       }
+    },
+    columnsSort:{
+      handler: function (newVal) {
+        if (newVal) {
+          this.$emit('onColumnsSort',newVal)
+        }
+      },
+      deep:true
     }
   },
   data () {
     this.store = createStore(this, {
       columns:[],
       selectAll:false,
-      columnsMap:{}
+      columnsMap:{},
+      columnsSort:this.defaultSort||null
     })
     return {
       hot: null,
@@ -173,6 +194,11 @@ export default {
   }
   ::v-deep
   .handsontable{
+    table thead{
+      th.ht__highlight.ht__active_highlight{
+        background-color: #dcdcdc;
+      }
+    }
     th:first-child{
       border-left:none;
     }
@@ -189,6 +215,13 @@ export default {
       td.currentSelRow{
         background-color: #dcdcdc;
       }
+    }
+    .header-sort{
+      display: flex;
+    }
+    .colHeader{
+      height: 24px;
+      line-height: 24px;
     }
   }
 }

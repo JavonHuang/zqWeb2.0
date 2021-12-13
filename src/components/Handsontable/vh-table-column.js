@@ -1,7 +1,11 @@
 import Handsontable from 'handsontable'
+import VhTableColumnSort from './VhTableColumnSort.vue'
 import Vue from 'vue'
 export default {
   name: 'VhTableColumn',
+  components:{
+    VhTableColumnSort
+  },
   props: {
     type: {
       type: String,
@@ -17,9 +21,12 @@ export default {
       type: Boolean,
       default: false
     },
-    formatter:Function,
-    showOverflowTooltip:Boolean
-    //rowData,prop,value,rowIndex
+    formatter:Function,//rowData,prop,value,rowIndex
+    showOverflowTooltip:Boolean,
+    sortable: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     owner() {
@@ -30,6 +37,9 @@ export default {
   data(){
     return {
       hasScopedSlots:false,
+      hasHeaderScopedSlots:false,
+      hasHeaderTipsScopedSlots:false,
+      sort:null
     }
   },
   mounted() {
@@ -56,14 +66,15 @@ export default {
       }
     }
 
-    //设置模板插槽列头
+    //设置模板插槽列头&&设置排序
     if(this.$scopedSlots.header){
       this.hasHeaderScopedSlots = true
     }
-    if(this.hasHeaderScopedSlots){
-      props['renderHeader']=(col,TH)=>{
-        this.rendererHeader(col,TH,props)
-      }
+    if(this.$scopedSlots.headerTips){
+      this.hasHeaderTipsScopedSlots = true
+    }
+    props['renderHeader']=(col,TH)=>{
+      this.rendererHeader(col,TH,props)
     }
 
     owner.store.commit('insertColumn', props, columnIndex)
@@ -130,23 +141,36 @@ export default {
       }
     },
     rendererHeader(col,TH,props){
-      const VNode = this.$scopedSlots.header({col:col,TH:TH,columns:props})
       const appDom = TH.querySelector('.colHeader')
       appDom.innerHTML = ''
-      const deidom = document.createElement('div')
+      const deidom = document.createElement('span')
       appDom.appendChild(deidom)
-      if (typeof VNode ==='string'){
-        deidom.innerHTML = VNode
+      let renderNode = []
+      if(this.hasHeaderScopedSlots){
+        renderNode.push(this.$scopedSlots.header({col:col,TH:TH,columns:props}))
       }else{
-        new Vue({
-          render: function (createElement) {
-            return createElement(
-              'div',
-              [VNode]
-            )
-          }
-        }).$mount(deidom)
+        renderNode.push(<div>{props.title}</div>)
       }
+      if(this.hasHeaderTipsScopedSlots){
+        renderNode.push(this.$scopedSlots.headerTips({col:col,TH:TH,columns:props}))
+      }
+      if(props.sortable){
+        const node = <VhTableColumnSort owner={this.owner} columnKey={props.data}/>
+        renderNode.push(node)
+      }
+      new Vue({
+        render: function (createElement) {
+          return createElement(
+            'span',
+            {
+              'class':{
+                'header-sort':true
+              }
+            },
+            [...renderNode]
+          )
+        }
+      }).$mount(deidom)
     },
     rendererHeaderSort(){
       

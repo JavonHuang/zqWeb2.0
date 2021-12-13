@@ -1,16 +1,24 @@
 <template>
   <div>
-    <pageVHandsontable 
+    <pageVHandsontable
       :url="'/gzList/getGzList'"
-      :mergeCellsKey="['SECURITY_CODE','CLOSE_PRICE','CHANGE_RATE']" 
+      :manualColumnResize="true"
+      :default-sort="{data:'CLOSE_PRICE',sort:'asc'}"
       >
       <VhTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120" :show-overflow-tooltip="true"></VhTableColumn>
-      <VhTableColumn type="text" data="CLOSE_PRICE" :readOnly="true" title="收价" width="180"></VhTableColumn>
-      <VhTableColumn type="text" data="CHANGE_RATE" :readOnly="true" title="波动" width="180"></VhTableColumn>
-      <VhTableColumn type="text" data="TRADE_DATE" :readOnly="true" width="200" title="日期">
+      <VhTableColumn type="text" data="CLOSE_PRICE" :sortable="true" :readOnly="true" title="收价" width="180"></VhTableColumn>
+      <VhTableColumn type="text" data="CHANGE_RATE" :sortable="true" :readOnly="true" title="波动" width="180"></VhTableColumn>
+      <VhTableColumn type="text" data="TRADE_DATE" :sortable="true" :readOnly="true" width="200" title="日期">
         <template slot="header" slot-scope="slotProps">
           <div>
             <div>{{slotProps.columns.title}}</div>
+          </div>
+        </template>
+        <template slot="headerTips" slot-scope="slotProps">
+          <div>
+            <el-tooltip class="item" effect="dark" :content="slotProps.columns.title" placement="top">
+                <i class="el-icon-question"></i>
+            </el-tooltip>
           </div>
         </template>
         <template slot-scope="slotProps">
@@ -29,8 +37,8 @@
 
 <script>
 import moment from 'moment'
-import pageVHandsontable from './../components/Handsontable/pageVHandsontable.vue'
-import VhTableColumn from './../components/Handsontable/vh-table-column'
+import pageVHandsontable from './../components/handsontable/pageVHandsontable'
+import VhTableColumn from './../components/handsontable/vh-table-column'
 export default {
   components:{
     pageVHandsontable,
@@ -39,6 +47,9 @@ export default {
   methods:{
     dateF(e){
       return moment(e).format('YYYY-MM-DD')
+    },
+    onColumnsSort(e){
+      console.log(e)
     }
   }
 }

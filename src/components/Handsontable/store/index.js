@@ -1,5 +1,5 @@
 import Watcher from './watcher';
-
+const lodash = require('lodash')
 Watcher.prototype.mutations = {
   setData(states, data) {
     states._data = data
@@ -14,6 +14,16 @@ Watcher.prototype.mutations = {
     })
     states.columns = list
     states.columnsMap = columnsMap
+  },
+  setColumnSort(states, columnKey, sort) {
+    let columnsSort ={
+      data:columnKey,
+      sort:sort
+    }
+    if(states.columnsSort.data===columnKey && states.columnsSort.sort==sort){
+      columnsSort=null
+    }
+    states.columnsSort = columnsSort
   },
   setSelectAll(states, selectAll) {
     states.selectAll = selectAll
