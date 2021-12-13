@@ -4,7 +4,9 @@
       :url="'/gzList/getGzList'"
       :manualColumnResize="true"
       :default-sort="{data:'CLOSE_PRICE',sort:'asc'}"
+      v-on:selection-change="selectionChange"
       >
+      <VhTableColumn type="selection"></VhTableColumn>
       <VhTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120" :show-overflow-tooltip="true"></VhTableColumn>
       <VhTableColumn type="text" data="CLOSE_PRICE" :sortable="true" :readOnly="true" title="收价" width="180"></VhTableColumn>
       <VhTableColumn type="text" data="CHANGE_RATE" :sortable="true" :readOnly="true" title="波动" width="180"></VhTableColumn>
@@ -49,6 +51,9 @@ export default {
       return moment(e).format('YYYY-MM-DD')
     },
     onColumnsSort(e){
+      console.log(e)
+    },
+    selectionChange(e){
       console.log(e)
     }
   }

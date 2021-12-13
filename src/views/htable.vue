@@ -2,8 +2,8 @@
 <div class="mymain">
   <div class="tablemain">
     <pageHandsontable :mergeCellsKey="['SECURITY_CODE','CLOSE_PRICE','CHANGE_RATE']" rowHeights="50" :url="'/gzList/getGzList'">
-      <!-- <HsTableColumn type="seletextction" :readOnly="false" title="选择" width="120">
-      </HsTableColumn> -->
+      <HsTableColumn type="seletextction" :readOnly="false" title="选择" width="120">
+      </HsTableColumn>
       <HsTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120">
         <template slot="header" slot-scope="slotProps">
           <div>

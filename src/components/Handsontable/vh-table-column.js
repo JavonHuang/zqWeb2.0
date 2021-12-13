@@ -1,5 +1,6 @@
 import Handsontable from 'handsontable'
 import VhTableColumnSort from './VhTableColumnSort.vue'
+import VhTableColumnSelect from './VhTableColumnSelect.vue'
 import Vue from 'vue'
 export default {
   name: 'VhTableColumn',
@@ -60,21 +61,31 @@ export default {
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.rendererCellByfFormatter(instance, td, row, col, prop, value, cellProperties, props)
       }
-    }else {
+    }else if(props.type!=='selection') {
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.rendererCell(instance, td, row, col, prop, value, cellProperties, props)
       }
     }
 
-    //设置模板插槽列头&&设置排序
-    if(this.$scopedSlots.header){
-      this.hasHeaderScopedSlots = true
-    }
-    if(this.$scopedSlots.headerTips){
-      this.hasHeaderTipsScopedSlots = true
-    }
-    props['renderHeader']=(col,TH)=>{
-      this.rendererHeader(col,TH,props)
+    //全选勾选
+    if(props.type=='selection'){
+      props.type = 'checkbox'
+      props.data = 'seletextction'
+      props.width= props.width|| 40
+      props.renderHeader =(col,TH)=>{
+        this.seletextctionRenderHeader(col,TH,props)
+      }
+    }else{
+      //设置模板插槽列头&&设置排序
+      if(this.$scopedSlots.header){
+        this.hasHeaderScopedSlots = true
+      }
+      if(this.$scopedSlots.headerTips){
+        this.hasHeaderTipsScopedSlots = true
+      }
+      props['renderHeader']=(col,TH)=>{
+        this.rendererHeader(col,TH,props)
+      }
     }
 
     owner.store.commit('insertColumn', props, columnIndex)
@@ -172,8 +183,20 @@ export default {
         }
       }).$mount(deidom)
     },
-    rendererHeaderSort(){
-      
+    seletextctionRenderHeader (col,TH,props) {
+      const appDom = TH.querySelector('.colHeader')
+      appDom.innerHTML = ''
+      const deidom = document.createElement('span')
+      appDom.appendChild(deidom)
+      const nodeDom = <VhTableColumnSelect owner={this.owner}/>
+      new Vue({
+        render: function (createElement) {
+          return createElement(
+            'span',
+            [nodeDom]
+          )
+        }
+      }).$mount(deidom)
     }
   },
   render (h) {

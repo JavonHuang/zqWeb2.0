@@ -96,6 +96,11 @@ export default {
         }
       },
       deep:true
+    },
+    selectAll:{
+       handler: function (newVal) {
+        this.selectAllChange(newVal)
+      },
     }
   },
   data () {
@@ -126,7 +131,8 @@ export default {
         mergeCells:this.mergeCellsKey.length>0,
         licenseKey: 'non-commercial-and-evaluation',
         afterLoadData:this.afterLoadData,
-        afterGetColHeader:this.afterGetColHeader
+        afterGetColHeader:this.afterGetColHeader,
+        afterChange:this.afterChange
       })
     },
     afterLoadData(sourceData){
@@ -138,9 +144,27 @@ export default {
       }
     },
     afterGetColHeader(col, TH){
-      const appDom = TH.querySelector('.colHeader')
       if(col!=-1 && this.columns && this.columns[col].renderHeader){
        this.columns[col].renderHeader(col, TH)
+      }
+    },
+    afterChange(changes){
+      // 设置全选、半选、全不选
+      if(this.hot){
+        const list = this.hot.getSourceData()
+        const hasFalse = list.find(item=>!item.seletextction)
+        const hasTrue = list.find(item=>item.seletextction)
+        if(hasFalse && hasTrue){
+          this.store.commit('setSelectAll',null)
+          const selList = list.filter(item=>{
+            return item.seletextction
+          })
+          this.$emit('selection-change',selList)
+        } else if(hasFalse && !hasTrue){
+          this.store.commit('setSelectAll',false)
+        }else if(!hasFalse && hasTrue){
+          this.store.commit('setSelectAll',true)
+        }
       }
     },
     loadData(sourceData){
@@ -168,6 +192,17 @@ export default {
         let mergeCellIntance = this.hot.getPlugin('mergeCells')
         mergeCellIntance.clearCollections()
       }
+    },
+    selectAllChange(selectAll){
+      if(selectAll===null){
+        return false
+      }
+      let list = this.hot.getSourceData()
+      list.forEach(item=>{
+        item.seletextction= selectAll
+      })
+      this.$emit('selection-change',selectAll?list:[])
+      this.hot.loadData(list)
     }
   }
 }
