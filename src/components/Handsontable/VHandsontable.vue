@@ -72,13 +72,21 @@ export default {
       type: Boolean,
       default: false
     },
+    nestedHeaders:{
+      type:Array,
+      default:()=>{
+        return []
+      }
+    }
   },
   computed:{
     ...mapStates({
       columns: 'columns',
       selectAll:'selectAll',
       columnsMap:'columnsMap',
-      columnsSort:'columnsSort'
+      columnsSort:'columnsSort',
+      nestedHeaderTitle:'nestedHeaderTitle',
+      operateColumns:'operateColumns'
     })
   },
   watch: {
@@ -108,7 +116,9 @@ export default {
       columns:[],
       selectAll:false,
       columnsMap:{},
-      columnsSort:this.defaultSort||null
+      columnsSort:this.defaultSort||null,
+      nestedHeaderTitle:[],
+      operateColumns:[]
     })
     return {
       hot: null,
@@ -128,6 +138,7 @@ export default {
         data: [],
         ...this.$props,
         columns:this.columns,
+        nestedHeaders: this.nestedHeaders.length>0?[this.nestedHeaders,this.nestedHeaderTitle]:null,
         mergeCells:this.mergeCellsKey.length>0,
         licenseKey: 'non-commercial-and-evaluation',
         afterLoadData:this.afterLoadData,
@@ -144,8 +155,11 @@ export default {
       }
     },
     afterGetColHeader(col, TH){
-      if(col!=-1 && this.columns && this.columns[col].renderHeader){
-       this.columns[col].renderHeader(col, TH)
+      let obj = TH.querySelector('._nested-header-title')
+      if(!this.nestedHeaders.length>0 || obj){
+        if(col!=-1 && this.columns && this.columns[col].renderHeader){
+          this.columns[col].renderHeader(col, TH)
+        }
       }
     },
     afterChange(changes){
@@ -173,6 +187,9 @@ export default {
         list.forEach((item,index)=>{
           item['seletextction'] = this.selectAll
           item['rowIndex'] = index
+          this.operateColumns.forEach(_key=>{
+            item[_key] = null
+          })
         })
         let mergeCells = []
         if(list.length>0){
@@ -182,7 +199,10 @@ export default {
         this.hot.loadData(list)
       }else{
         sourceData.forEach((item,index)=>{
-          item['seletextction'] = this.selectAll
+          item['seletextction'] = this.selectAll,
+          this.operateColumns.forEach(_key=>{
+            item[_key] = null
+          })
         })
         this.hot.loadData(sourceData)
       }

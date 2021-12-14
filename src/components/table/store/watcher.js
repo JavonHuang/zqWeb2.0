@@ -7,6 +7,8 @@ export default Vue.extend({
       states:{
         columns: [],
         columnsMap:{},
+        columnsMap:{},
+        nestedHeaderTite:[],
         selectAll:false
       }
     }

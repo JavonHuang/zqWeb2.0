@@ -23,7 +23,7 @@
 import Vue from 'vue'
 import Handsontable from 'handsontable'
 import { createStore, mapStates } from './store/helper'
-import {deepList,deepList2} from './store/group'
+import {generateGroup} from './store/group'
 const lodash = require('lodash')
 export default {
   props: {
@@ -115,7 +115,8 @@ export default {
     this.store = createStore(this, {
       columns:[],
       selectAll:false,
-      columnsMap:{}
+      columnsMap:{},
+      nestedHeaderTite:[]
     })
     return {
       hot: null,
@@ -146,11 +147,11 @@ export default {
         currentRowClassName: 'currentSelRow',
         search: true,
         licenseKey: 'non-commercial-and-evaluation',
-        // nestedHeaders: [
-        // ['A', { label: (()=> '<span>99</span>')(), colspan: 5 }, 'C89'],
-        // ['D', { label: 'E', colspan: 2 }, { label: 'F', colspan: 3 }, 'G'],
-        // that.nestedHeadersColumnName
-        // ],
+        nestedHeaders: [
+        ['A', { label: (()=> '<span>99</span>')(), colspan: 5 }, 'C89'],
+        ['D', { label: 'E', colspan: 2 }, { label: 'F', colspan: 3 }, 'G'],
+        that.nestedHeadersColumnName
+        ],
         hiddenColumns: true,
         comments: true,
         cell: [
@@ -195,7 +196,7 @@ export default {
       })
       let mergeCells = []
       if(list.length>0){
-        deepList2(list,that.mergeCellsKey,mergeCells,that.columnsMap,0)
+        generateGroup(list,that.mergeCellsKey,mergeCells,that.columnsMap,0)
         that.mergeCells = mergeCells
       }
       console.log(that.mergeCells)

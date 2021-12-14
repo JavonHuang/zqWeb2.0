@@ -2,6 +2,7 @@ import Handsontable from 'handsontable'
 import VhTableColumnSort from './VhTableColumnSort.vue'
 import VhTableColumnSelect from './VhTableColumnSelect.vue'
 import Vue from 'vue'
+import {generateUUID} from './store/group'
 export default {
   name: 'VhTableColumn',
   components:{
@@ -10,7 +11,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: 'text'
+      default: null
     },
     width: {},
     data: {},
@@ -52,6 +53,12 @@ export default {
     //设置模板格显示
     if(this.$scopedSlots.default){
       this.hasScopedSlots = true
+    }
+
+    if(!props.type){
+      props.type='text',
+      props.data = generateUUID('operate')
+      owner.store.commit('insertOperateColumn', props.data)
     }
     if(this.hasScopedSlots){
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {

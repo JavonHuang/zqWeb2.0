@@ -1,24 +1,6 @@
 const lodash = require('lodash')
 
-const deepList = (list,keyList,mergeCells,columnsMap) => {
-  let grouByList = lodash.groupBy(list,keyList[0])
-  lodash.mapKeys(grouByList,(value,key)=>{
-    if(value.length>1){
-      mergeCells.push({
-        row:value[0].rowIndex,
-        rowspan:value[value.length-1].rowIndex,
-        col:columnsMap[keyList[0]],
-        colspan: 1
-      })
-      let newkeyList = keyList.splice(1,1)
-      if(newkeyList.length>0){
-        deepList(value,newkeyList,mergeCells,columnsMap)
-      }
-    }
-  })
-}
-
-const deepList2 = (list,keyList,mergeCells,columnsMap,level) => {
+const generateGroup = (list,keyList,mergeCells,columnsMap,level) => {
   let grouByList = lodash.groupBy(list,keyList[level])
   level++
   lodash.mapKeys(grouByList,(value,key)=>{
@@ -30,12 +12,24 @@ const deepList2 = (list,keyList,mergeCells,columnsMap,level) => {
         endCol: columnsMap[keyList[level-1]],
       })
       if(level<keyList.length){
-        deepList2(value,keyList,mergeCells,columnsMap,level)
+        generateGroup(value,keyList,mergeCells,columnsMap,level)
       }
     }
   })
 }
+
+const generateUUID = (prefix = null)=> {
+  let d = new Date().getTime()
+  const pre = !prefix ? 'xxxx' : prefix + '_'
+  const uuid = `${pre}xx4xxyxx`.replace(/[xy]/g, (str) => {
+    const r = (d + Math.random() * 8) % 16 | 0
+    d = Math.floor(d/16)
+    return (str == 'x' ? r : (r&0x3|0x8)).toString(16)
+  })
+
+  return uuid
+}
 export {
-  deepList2,
-  deepList
+  generateGroup,
+  generateUUID
 }

@@ -6,14 +6,20 @@ Watcher.prototype.mutations = {
   },
   insertColumn(states, column, columnIndex) {
     let columnsMap = {}
+    let nestedHeaderTitle = []
     let list = [...states.columns]
     list.splice(columnIndex, 0, column)
     list.forEach((item,index)=>{
       item.columnIndex = index
       columnsMap[item.data] = index
+      nestedHeaderTitle.push({
+        label:`<div class="_nested-header-title">${item.title}</div>`,
+        colspan:1
+      })
     })
     states.columns = list
     states.columnsMap = columnsMap
+    states.nestedHeaderTitle = nestedHeaderTitle
   },
   setColumnSort(states, columnKey, sort) {
     let columnsSort ={
@@ -24,6 +30,11 @@ Watcher.prototype.mutations = {
       columnsSort=null
     }
     states.columnsSort = columnsSort
+  },
+  insertOperateColumn(states,operateKey){
+    let operateColumns = states.operateColumns
+    operateColumns.push(operateKey)
+    states.operateColumns = operateColumns
   },
   setSelectAll(states, selectAll) {
     states.selectAll = selectAll

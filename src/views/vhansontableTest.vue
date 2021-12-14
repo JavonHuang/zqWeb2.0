@@ -2,6 +2,7 @@
   <div>
     <pageVHandsontable
       :url="'/gzList/getGzList'"
+      :nestedHeaders="nestedHeaders"
       :manualColumnResize="true"
       :default-sort="{data:'CLOSE_PRICE',sort:'asc'}"
       v-on:selection-change="selectionChange"
@@ -31,8 +32,14 @@
       </VhTableColumn>
       <VhTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="占比" width="180" :formatter="(rowData,prop,value,rowIndex)=>{return value +'%'}"></VhTableColumn>
       <VhTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="数量" width="40" :show-overflow-tooltip="true"></VhTableColumn>
-      <VhTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="规模" width="40"></VhTableColumn>
-      <VhTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="图片" width="180"></VhTableColumn>
+      <VhTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="规模" width="40"></VhTableColumn>  
+      <VhTableColumn title="操作" width="200">
+        <template slot-scope="slotProps">
+          <div>
+            <el-button v-on:click="handelClick(slotProps)" type="text" size="small">查看</el-button>
+          </div>
+        </template>
+      </VhTableColumn>
     </pageVHandsontable>
   </div>
 </template>
@@ -46,6 +53,11 @@ export default {
     pageVHandsontable,
     VhTableColumn
   },
+  data(){
+    return{
+      nestedHeaders:['A', { label: this.test(), colspan: 2 },'测试',{ label: '合并表头', colspan: 2 },{ label: '合并第二', colspan: 2 }]
+    }
+  },
   methods:{
     dateF(e){
       return moment(e).format('YYYY-MM-DD')
@@ -55,6 +67,12 @@ export default {
     },
     selectionChange(e){
       console.log(e)
+    },
+    handelClick(e){
+      console.log(e)
+    },
+    test(){
+      return '879898'
     }
   }
 }

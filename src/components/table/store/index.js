@@ -6,14 +6,17 @@ Watcher.prototype.mutations = {
   },
   insertColumn(states, column, columnIndex) {
     let columnsMap = {}
+    let nestedHeaderTite = []
     let list = [...states.columns]
     list.splice(columnIndex, 0, column)
     list.forEach((item,index)=>{
       item.columnIndex = index
       columnsMap[item.data] = index
+      nestedHeaderTite.push(item.title)
     })
     states.columns = list
     states.columnsMap = columnsMap
+    states.nestedHeaderTite = nestedHeaderTite
   },
   setSelectAll(states, selectAll) {
     states.selectAll = selectAll

@@ -8,7 +8,9 @@ export default Vue.extend({
         columns: [],
         columnsMap:{},
         selectAll:false,
-        columnsSort:[]
+        nestedHeaderTitle:[],
+        columnsSort:[],
+        operateColumns:[],//操列生成动态id
       }
     }
   }
