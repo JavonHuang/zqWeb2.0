@@ -77,6 +77,14 @@ export default {
       default:()=>{
         return []
       }
+    },
+    fixedRowsBottom:{
+      type: Number,
+      default: null
+    },
+    fixedColumnsLeft:{
+      type: Number,
+      default: null
     }
   },
   computed:{
@@ -204,6 +212,11 @@ export default {
             item[_key] = null
           })
         })
+        let last = {}
+        lodash.forIn(sourceData[0],(value, key)=>{
+          last[key] = null
+        })
+        sourceData.push(last)
         this.hot.loadData(sourceData)
       }
     },
@@ -231,6 +244,7 @@ export default {
 <style lang="scss" scoped>
 .VHandsontable{
   display: flex;
+  flex-direction: column;
   ::v-deep
   .show-overflow-tooltip{
     div{

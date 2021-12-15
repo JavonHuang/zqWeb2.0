@@ -103,8 +103,18 @@ export default {
     },
     rendererCellSlot(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
       const rowData = instance.getSourceDataAtRow(rowIndex)
+      // const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
+      // if(ht_clone_bottom.contains(td)){
+      //   const deidom = document.createElement('div')
+      //   Handsontable.dom.empty(td)
+      //   this.setTdClasss(td)
+      //   deidom.innerHTML='66'
+      //   td.appendChild(deidom)
+      //   return td
+      // }
       if(this.hasScopedSlots){
         const VNode = this.$scopedSlots.default({
+          td:td,
           rowData:rowData,
           rowIndex:rowIndex,
           colIndex:colIndex,
@@ -128,6 +138,15 @@ export default {
       return td
     },
     rendererCellByfFormatter(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
+      const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
+      // if(ht_clone_bottom.contains(td)){
+      //   const deidom = document.createElement('div')
+      //   Handsontable.dom.empty(td)
+      //   this.setTdClasss(td)
+      //   deidom.innerHTML='66'
+      //   td.appendChild(deidom)
+      //   return td
+      // }
       const rowData = instance.getSourceDataAtRow(rowIndex)
       let result = props.formatter(rowData,prop,value,rowIndex)
       const deidom = document.createElement('div')
@@ -138,6 +157,15 @@ export default {
       return td
     },
     rendererCell(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
+      const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
+      // if(ht_clone_bottom.contains(td)){
+      //   const deidom = document.createElement('div')
+      //   Handsontable.dom.empty(td)
+      //   this.setTdClasss(td)
+      //   deidom.innerHTML='66'
+      //   td.appendChild(deidom)
+      //   return td
+      // }
       const deidom = document.createElement('div')
       Handsontable.dom.empty(td)
       deidom.innerHTML=value
