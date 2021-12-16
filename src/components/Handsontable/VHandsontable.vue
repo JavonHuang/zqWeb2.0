@@ -11,7 +11,7 @@ import Vue from 'vue'
 import Handsontable from 'handsontable'
 import { createStore, mapStates } from './store/helper'
 import { renderIndexCell } from './vh-column-footer'
-import {deepList2} from './store/group'
+import {generateGroup} from './store/group'
 const lodash = require('lodash')
 export default {
   props:{
@@ -250,7 +250,7 @@ export default {
         })
         let mergeCells = []
         if(list.length>0){
-          deepList2(list,this.mergeCellsKey,mergeCells,this.columnsMap,0)
+          generateGroup(list,this.mergeCellsKey,mergeCells,this.columnsMap,0)
           this.mergeCells = mergeCells
         }
         this.hot.loadData(list)

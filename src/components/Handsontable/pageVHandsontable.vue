@@ -18,6 +18,7 @@
 <script>
 import VHandsontable from './VHandsontable'
 export default {
+  name:'pageVHandsontable',
   components: {
     VHandsontable
   },
@@ -110,7 +111,7 @@ export default {
   box-sizing: content-box;
   .VHandsontable{
     flex:1;
-    margin: 0px -1px 0px 0px;
+    margin: 0px 0px 0px 0px;
   }
   .pagination{
     border-top:1px solid #ccc;

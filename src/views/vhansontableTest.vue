@@ -6,7 +6,6 @@
       :manualColumnResize="true"
       :default-sort="{data:'CLOSE_PRICE',sort:'asc'}"
       :fixedRowsBottom="1"
-      :fixedColumnsLeft="2"
       :countFixedRowsBottom="1"
       :columnsFooter="columnsFooter"
       v-on:selection-change="selectionChange"
@@ -37,7 +36,7 @@
       <VhTableColumn type="text" data="A_SHARES_RATIO" :readOnly="true" title="占比" width="180" :formatter="(rowData,prop,value,rowIndex)=>{return value +'%'}"></VhTableColumn>
       <VhTableColumn type="text" data="HOLD_SHARES" :readOnly="true" title="数量" width="180" :show-overflow-tooltip="true"></VhTableColumn>
       <VhTableColumn type="text" data="HOLD_MARKET_CAP" :readOnly="true" title="规模" width="180"></VhTableColumn>  
-      <VhTableColumn title="操作" :width="1000">
+      <VhTableColumn title="操作" :width="100">
         <template slot-scope="slotProps">
           <div>
             <el-button v-on:click="handelClick(slotProps)" type="text" size="small">查看</el-button>
@@ -50,8 +49,8 @@
 
 <script>
 import moment from 'moment'
-import pageVHandsontable from './../components/handsontable/pageVHandsontable'
-import VhTableColumn from './../components/handsontable/vh-table-column'
+import pageVHandsontable from './../components/Handsontable/pageVHandsontable.vue'
+import VhTableColumn from './../components/Handsontable/vh-table-column'
 export default {
   components:{
     pageVHandsontable,
@@ -67,9 +66,11 @@ export default {
     setTimeout(()=>{
       this.columnsFooter = {
         SECURITY_CODE:'877979',
+        CLOSE_PRICE:'合计测试12',
+        CHANGE_RATE:'213',
         A_SHARES_RATIO:'7878'
       }
-    },5000)
+    })
   },
   methods:{
     dateF(e,slotProps){

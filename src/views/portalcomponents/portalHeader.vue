@@ -6,7 +6,7 @@
       <span>{{2323}}</span>
     </div>
     <div class="company">
-      <span>JavonHuang-web</span>
+      <span>JavonHuang-web-demo</span>
     </div>
     <div>
       <el-dropdown>

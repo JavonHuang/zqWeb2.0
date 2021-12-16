@@ -172,7 +172,7 @@ export default {
       return td
     },
     setTdClasss(td){
-      td.style.height= `${this.owner.rowHeights}px`
+      // td.style.height= `${this.owner.rowHeights}px`
       if(this.showOverflowTooltip){
         td.classList.add('show-overflow-tooltip')
       }else{
