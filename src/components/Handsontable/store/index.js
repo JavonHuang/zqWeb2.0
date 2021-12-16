@@ -36,6 +36,11 @@ Watcher.prototype.mutations = {
     operateColumns.push(operateKey)
     states.operateColumns = operateColumns
   },
+  insertColumnsFooterMap(states,columnsKey,dom){
+    let columnsFooterMap = states.columnsFooterMap
+    columnsFooterMap[columnsKey]=dom
+    states.columnsFooterMap = columnsFooterMap
+  },
   setSelectAll(states, selectAll) {
     states.selectAll = selectAll
   }

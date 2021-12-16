@@ -10,6 +10,7 @@
 import Vue from 'vue'
 import Handsontable from 'handsontable'
 import { createStore, mapStates } from './store/helper'
+import { renderIndexCell } from './vh-column-footer'
 import {deepList2} from './store/group'
 const lodash = require('lodash')
 export default {
@@ -37,7 +38,7 @@ export default {
     rowHeights: {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Number | String,
-      default: null
+      default: 30
       // 表格行高
     },
     colWidths: {
@@ -85,6 +86,14 @@ export default {
     fixedColumnsLeft:{
       type: Number,
       default: null
+    },
+    countFixedRowsBottom:{
+      type: Number,
+      default: null
+    },
+    columnsFooter:{
+      type: Object,
+      default: ()=>null
     }
   },
   computed:{
@@ -94,7 +103,8 @@ export default {
       columnsMap:'columnsMap',
       columnsSort:'columnsSort',
       nestedHeaderTitle:'nestedHeaderTitle',
-      operateColumns:'operateColumns'
+      operateColumns:'operateColumns',
+      columnsFooterMap:'columnsFooterMap'
     })
   },
   watch: {
@@ -114,9 +124,15 @@ export default {
       deep:true
     },
     selectAll:{
-       handler: function (newVal) {
+      handler: function (newVal) {
         this.selectAllChange(newVal)
       },
+    },
+    columnsFooter:{
+      handler: function () {
+        this.updateFooter()
+      },
+      deep:true
     }
   },
   data () {
@@ -126,11 +142,14 @@ export default {
       columnsMap:{},
       columnsSort:this.defaultSort||null,
       nestedHeaderTitle:[],
-      operateColumns:[]
+      operateColumns:[],
+      columnsFooterMap:{}
     })
     return {
       hot: null,
-      mergeCells:[]
+      mergeCells:[],
+      dataMaxNum:0,
+      dispalyNode:[]
     }
   },
   methods:{
@@ -149,10 +168,14 @@ export default {
         nestedHeaders: this.nestedHeaders.length>0?[this.nestedHeaders,this.nestedHeaderTitle]:null,
         mergeCells:this.mergeCellsKey.length>0,
         licenseKey: 'non-commercial-and-evaluation',
+        beforeLoadData:this.beforeLoadData,
         afterLoadData:this.afterLoadData,
         afterGetColHeader:this.afterGetColHeader,
-        afterChange:this.afterChange
+        afterChange:this.afterChange,
+        afterRender:this.afterRender
       })
+    },
+    beforeLoadData(){
     },
     afterLoadData(sourceData){
       if(sourceData.length>0 && this.hot){
@@ -189,7 +212,33 @@ export default {
         }
       }
     },
+    afterRender(isForced){
+      /**
+       * 底部计算时处理视图逻辑
+       * */
+      if(isForced && this.countFixedRowsBottom){
+        this.dispalyNode.forEach(item=>{
+          item.style.visibility= null
+        })
+        this.dispalyNode = []
+        renderIndexCell(this.$el,this.dataMaxNum,this.dispalyNode)
+        this.updateFooter()
+      }
+    },
+    updateFooter(){
+      lodash.forIn(this.columnsFooter,(value, key)=>{
+        !lodash.isEmpty(this.columnsFooterMap) && (this.columnsFooterMap[key].innerHTML = value)
+      })
+    },
     loadData(sourceData){
+      if(this.countFixedRowsBottom){
+        let last = {}
+        lodash.forIn(sourceData[0],(value, key)=>{
+          last[key] = null
+        })
+        sourceData.push(last)
+      }
+      this.dataMaxNum = sourceData.length
       if(this.mergeCellsKey.length>0){
         let list = lodash.sortBy(sourceData,this.mergeCellsKey)
         list.forEach((item,index)=>{
@@ -212,11 +261,6 @@ export default {
             item[_key] = null
           })
         })
-        let last = {}
-        lodash.forIn(sourceData[0],(value, key)=>{
-          last[key] = null
-        })
-        sourceData.push(last)
         this.hot.loadData(sourceData)
       }
     },

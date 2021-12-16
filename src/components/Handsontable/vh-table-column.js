@@ -45,6 +45,7 @@ export default {
     }
   },
   mounted() {
+    const _self = this
     const owner = this.owner
     const children = owner.$el.children
     const columnIndex = this.getColumnElIndex(children, this.$el)
@@ -55,11 +56,17 @@ export default {
       this.hasScopedSlots = true
     }
 
+    //操作列设置
     if(!props.type){
       props.type='text',
+      props.readOnly= true
       props.data = generateUUID('operate')
       owner.store.commit('insertOperateColumn', props.data)
     }
+
+    /**
+     * 渲染cell
+     * */
     if(this.hasScopedSlots){
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.rendererCellSlot(instance, td, row, col, prop, value, cellProperties, props)
@@ -68,7 +75,16 @@ export default {
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.rendererCellByfFormatter(instance, td, row, col, prop, value, cellProperties, props)
       }
-    }else if(props.type!=='selection') {
+    }else if(props.type=='selection'){
+      props['renderer']=function (instance, td, row, col, prop, value, cellProperties){
+        td.setAttribute('data-columns',props.data)
+        if(_self.owner.dataMaxNum!=(row+1)){
+          Handsontable.renderers.CheckboxRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties])
+        }
+        // return td
+      }
+    }
+    else if(props.type!=='selection') {
       props['renderer']= (instance, td, row, col, prop, value, cellProperties) => {
         return this.rendererCell(instance, td, row, col, prop, value, cellProperties, props)
       }
@@ -102,16 +118,10 @@ export default {
       return [].indexOf.call(children, child);
     },
     rendererCellSlot(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+        return td
+      }
       const rowData = instance.getSourceDataAtRow(rowIndex)
-      // const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
-      // if(ht_clone_bottom.contains(td)){
-      //   const deidom = document.createElement('div')
-      //   Handsontable.dom.empty(td)
-      //   this.setTdClasss(td)
-      //   deidom.innerHTML='66'
-      //   td.appendChild(deidom)
-      //   return td
-      // }
       if(this.hasScopedSlots){
         const VNode = this.$scopedSlots.default({
           td:td,
@@ -138,15 +148,9 @@ export default {
       return td
     },
     rendererCellByfFormatter(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
-      const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
-      // if(ht_clone_bottom.contains(td)){
-      //   const deidom = document.createElement('div')
-      //   Handsontable.dom.empty(td)
-      //   this.setTdClasss(td)
-      //   deidom.innerHTML='66'
-      //   td.appendChild(deidom)
-      //   return td
-      // }
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+        return td
+      }
       const rowData = instance.getSourceDataAtRow(rowIndex)
       let result = props.formatter(rowData,prop,value,rowIndex)
       const deidom = document.createElement('div')
@@ -157,15 +161,9 @@ export default {
       return td
     },
     rendererCell(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
-      const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom')
-      // if(ht_clone_bottom.contains(td)){
-      //   const deidom = document.createElement('div')
-      //   Handsontable.dom.empty(td)
-      //   this.setTdClasss(td)
-      //   deidom.innerHTML='66'
-      //   td.appendChild(deidom)
-      //   return td
-      // }
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+        return td
+      }
       const deidom = document.createElement('div')
       Handsontable.dom.empty(td)
       deidom.innerHTML=value
@@ -174,6 +172,7 @@ export default {
       return td
     },
     setTdClasss(td){
+      td.style.height= `${this.owner.rowHeights}px`
       if(this.showOverflowTooltip){
         td.classList.add('show-overflow-tooltip')
       }else{
@@ -232,6 +231,39 @@ export default {
           )
         }
       }).$mount(deidom)
+    },
+    renderCountFixedRowsBottom(td,rowIndex,columnsKey){
+      if(!this.owner.countFixedRowsBottom){
+        return false
+      }
+      /**
+       * 处理计算，bottom悬浮行显示
+       * case1:悬浮行显示自定义
+       * case2:因为是使用底部悬浮行模拟的的合计行，所以要隐藏掉在原View table内的显示行
+       * */
+      const ht_clone_bottom = this.owner.$el.querySelector('.ht_clone_bottom table tbody')
+      if(ht_clone_bottom.contains(td)){
+        const deidom = document.createElement('div')
+        Handsontable.dom.empty(td)
+        this.setTdClasss(td)
+        deidom.innerHTML=''
+        td.appendChild(deidom)
+        this.owner.store.commit('insertColumnsFooterMap', columnsKey, deidom)
+        return td
+      } else if(this.owner.dataMaxNum==(rowIndex+1)){
+        const deidom = document.createElement('div')
+        Handsontable.dom.empty(td)
+        this.setTdClasss(td)
+        deidom.innerHTML=''
+        td.appendChild(deidom)
+        td.setAttribute('data-columns',columnsKey)
+        // td.parentNode.childNodes.forEach(item=>{
+        //   // item.style.visibility='hidden'
+        // })
+        return td
+      }else{
+        return false
+      }
     }
   },
   render (h) {

@@ -11,6 +11,7 @@ export default Vue.extend({
         nestedHeaderTitle:[],
         columnsSort:[],
         operateColumns:[],//操列生成动态id
+        columnsFooterMap:{}
       }
     }
   }

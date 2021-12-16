@@ -49,7 +49,7 @@ export default {
       hscolumnList: [],
       list: [],
       count: 0,
-      pageSize: 20,
+      pageSize: 10,
       currentPage: 1,
       sort: {
         order: null,
