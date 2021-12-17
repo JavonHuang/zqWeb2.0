@@ -104,7 +104,8 @@ export default {
       columnsSort:'columnsSort',
       nestedHeaderTitle:'nestedHeaderTitle',
       operateColumns:'operateColumns',
-      columnsFooterMap:'columnsFooterMap'
+      columnsFooterMap:'columnsFooterMap',
+      columnsFooterLeftMap:'columnsFooterLeftMap'
     })
   },
   watch: {
@@ -133,6 +134,12 @@ export default {
         this.updateFooter()
       },
       deep:true
+    },
+    columnsFooterLeftMap:{
+       handler: function (newVal) {
+        console.log(newVal)
+      },
+      deep:true
     }
   },
   data () {
@@ -143,7 +150,8 @@ export default {
       columnsSort:this.defaultSort||null,
       nestedHeaderTitle:[],
       operateColumns:[],
-      columnsFooterMap:{}
+      columnsFooterMap:{},
+      columnsFooterLeftMap:{}
     })
     return {
       hot: null,
@@ -165,6 +173,14 @@ export default {
         data: [],
         ...this.$props,
         columns:this.columns,
+        readOnlyCellClassName:'is-readOnly',
+        cells:(columns, rows, cells)=>{
+          if(this.countFixedRowsBottom && this.dataMaxNum == columns+1){
+            return{
+              readOnly:true
+            }
+          }
+        },
         nestedHeaders: this.nestedHeaders.length>0?[this.nestedHeaders,this.nestedHeaderTitle]:null,
         mergeCells:this.mergeCellsKey.length>0,
         licenseKey: 'non-commercial-and-evaluation',
@@ -172,7 +188,8 @@ export default {
         afterLoadData:this.afterLoadData,
         afterGetColHeader:this.afterGetColHeader,
         afterChange:this.afterChange,
-        afterRender:this.afterRender
+        afterRender:this.afterRender,
+        afterViewRender:this.afterViewRender
       })
     },
     beforeLoadData(){
@@ -217,17 +234,43 @@ export default {
        * 底部计算时处理视图逻辑
        * */
       if(isForced && this.countFixedRowsBottom){
+        let dom = null
         this.dispalyNode.forEach(item=>{
           item.style.visibility= null
+          if(item.childNodes){
+            item.childNodes.forEach(_item=>{
+              _item.style.display = null
+            })
+          }
         })
         this.dispalyNode = []
-        renderIndexCell(this.$el,this.dataMaxNum,this.dispalyNode)
+        renderIndexCell(this.$el,this.dataMaxNum,this.dispalyNode,this.store)
+        this.updateFooter()
+      }
+    },
+    afterViewRender(isForced){
+      if(this.columnsFooterLeftMap && this.columnsFooterLeftMap._index){
+        this.columnsFooterLeftMap._index.innerText='合计'
+      }
+      if(isForced && this.countFixedRowsBottom){
+        let dom = null
+        this.dispalyNode.forEach(item=>{
+          item.style.visibility= null
+          if(item.childNodes){
+            item.childNodes.forEach(_item=>{
+              _item.style.display = null
+            })
+          }
+        })
+        this.dispalyNode = []
+        renderIndexCell(this.$el,this.dataMaxNum,this.dispalyNode,this.store)
         this.updateFooter()
       }
     },
     updateFooter(){
       lodash.forIn(this.columnsFooter,(value, key)=>{
-        !lodash.isEmpty(this.columnsFooterMap) && (this.columnsFooterMap[key].innerHTML = value)
+        !lodash.isEmpty(this.columnsFooterMap) && this.columnsFooterMap[key] && (this.columnsFooterMap[key].innerHTML = value)
+        !lodash.isEmpty(this.columnsFooterLeftMap) && this.columnsFooterLeftMap[key] && (this.columnsFooterLeftMap[key].innerText = value)
       })
     },
     loadData(sourceData){

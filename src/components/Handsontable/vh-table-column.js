@@ -77,11 +77,12 @@ export default {
       }
     }else if(props.type=='selection'){
       props['renderer']=function (instance, td, row, col, prop, value, cellProperties){
+        _self.setTdClasss(td,[cellProperties.readOnlyCellClassName])
         td.setAttribute('data-columns',props.data)
         if(_self.owner.dataMaxNum!=(row+1)){
           Handsontable.renderers.CheckboxRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties])
         }
-        // return td
+        return td
       }
     }
     else if(props.type!=='selection') {
@@ -118,7 +119,7 @@ export default {
       return [].indexOf.call(children, child);
     },
     rendererCellSlot(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
-      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data,cellProperties)){
         return td
       }
       const rowData = instance.getSourceDataAtRow(rowIndex)
@@ -134,7 +135,7 @@ export default {
         })
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
-        this.setTdClasss(td)
+        this.setTdClasss(td,[cellProperties.readOnlyCellClassName])
         td.appendChild(deidom)
         new Vue({
           render: function (createElement) {
@@ -148,7 +149,7 @@ export default {
       return td
     },
     rendererCellByfFormatter(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
-      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data,cellProperties)){
         return td
       }
       const rowData = instance.getSourceDataAtRow(rowIndex)
@@ -156,22 +157,22 @@ export default {
       const deidom = document.createElement('div')
       Handsontable.dom.empty(td)
       deidom.innerHTML=result
-      this.setTdClasss(td)
+      this.setTdClasss(td,[cellProperties.readOnlyCellClassName])
       td.appendChild(deidom)
       return td
     },
     rendererCell(instance, td, rowIndex, colIndex, prop, value, cellProperties, props){
-      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data)){
+      if(this.renderCountFixedRowsBottom(td,rowIndex,props.data,cellProperties)){
         return td
       }
       const deidom = document.createElement('div')
       Handsontable.dom.empty(td)
       deidom.innerHTML=value
-      this.setTdClasss(td)
+      this.setTdClasss(td,[cellProperties.readOnlyCellClassName])
       td.appendChild(deidom)
       return td
     },
-    setTdClasss(td){
+    setTdClasss(td,classList){
       // td.style.height= `${this.owner.rowHeights}px`
       if(this.showOverflowTooltip){
         td.classList.add('show-overflow-tooltip')
@@ -184,6 +185,9 @@ export default {
           td.classList.add(cl)
         })
       }
+      classList.forEach(cl=>{
+        td.classList.add(cl)
+      })
     },
     rendererHeader(col,TH,props){
       const appDom = TH.querySelector('.colHeader')
@@ -232,7 +236,7 @@ export default {
         }
       }).$mount(deidom)
     },
-    renderCountFixedRowsBottom(td,rowIndex,columnsKey){
+    renderCountFixedRowsBottom(td,rowIndex,columnsKey,cellProperties){
       if(!this.owner.countFixedRowsBottom){
         return false
       }
@@ -245,21 +249,26 @@ export default {
       if(ht_clone_bottom.contains(td)){
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
-        this.setTdClasss(td)
-        deidom.innerHTML=''
+        this.setTdClasss(td,[cellProperties.readOnlyCellClassName])
+        if(this.owner.columnsFooter){
+          deidom.innerHTML=this.owner.columnsFooter[columnsKey]||null
+        }else{
+          deidom.innerHTML=null
+        }
         td.appendChild(deidom)
         this.owner.store.commit('insertColumnsFooterMap', columnsKey, deidom)
         return td
       } else if(this.owner.dataMaxNum==(rowIndex+1)){
         const deidom = document.createElement('div')
         Handsontable.dom.empty(td)
-        this.setTdClasss(td)
-        deidom.innerHTML=''
+        this.setTdClasss(td,[cellProperties.readOnlyCellClassName])
+        if(this.owner.columnsFooter){
+          deidom.innerHTML=this.owner.columnsFooter[columnsKey]
+        }else{
+          deidom.innerHTML=null
+        }
         td.appendChild(deidom)
         td.setAttribute('data-columns',columnsKey)
-        // td.parentNode.childNodes.forEach(item=>{
-        //   // item.style.visibility='hidden'
-        // })
         return td
       }else{
         return false
