@@ -50,8 +50,8 @@
 
 <script>
 import moment from 'moment'
-import pageVHandsontable from './../components/handsontable/pageVHandsontable'
-import VhTableColumn from './../components/handsontable/vh-table-column'
+import pageVHandsontable from './../components/Handsontable/pageVHandsontable.vue'
+import VhTableColumn from './../components/Handsontable/vh-table-column'
 export default {
   components:{
     pageVHandsontable,

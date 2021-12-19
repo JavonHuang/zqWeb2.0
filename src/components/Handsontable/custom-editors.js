@@ -1,13 +1,31 @@
 import Handsontable from 'handsontable'
+import Vue from 'vue'
+import elselect from './select.vue'
 
 class elCheckEditor extends Handsontable.editors.BaseEditor {
   init() {
     this.select = this.hot.rootDocument.createElement('SELECT');
+    // this.select = this.hot.rootDocument.createElement('div');
     Handsontable.dom.addClass(this.select, 'htSelectEditor');
     this.select.style.display = 'none';
 
+    // const deidom = document.createElement('div')
+    // this.select.appendChild(deidom)
     // Attach node to DOM, by appending it to the container holding the table
     this.hot.rootElement.appendChild(this.select);
+    // new Vue({
+    //   render: function (createElement) {
+    //     return createElement(
+    //       'div',
+    //       [elselect]
+    //     )
+    //   }
+    // }).$mount(deidom)
+
+    // new Vue({
+    //   el:deidom,
+    //   render: h => h(elselect)
+    // })
   }
 
   prepare(row, col, prop, td, originalValue, cellProperties) {
