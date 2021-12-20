@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="value" placeholder="请选择">
+  <el-select :popper-append-to-body="false" class="editorsSel" v-on:change="change" v-model="mydq" placeholder="请选择">
     <el-option
       v-for="item in options"
       :key="item.value"
@@ -12,27 +12,68 @@
 
 <script>
   export default {
+    props:{
+      slotProps:Object
+    },
     data() {
       return {
         options: [{
-          value: '选项1',
-          label: '黄金糕'
+          value: '000750',
+          label: '国海证券'
         }, {
-          value: '选项2',
-          label: '双皮奶',
-          disabled: true
-        }, {
-          value: '选项3',
-          label: '蚵仔煎'
-        }, {
-          value: '选项4',
-          label: '龙须面'
-        }, {
-          value: '选项5',
-          label: '北京烤鸭'
+          value: '600326',
+          label: '西藏天路'
         }],
-        value: ''
+        mydq: null
+      }
+    },
+    created(){
+      this.mydq = this.slotProps.originalValue
+      console.log(this.mydq)
+      this.slotProps['setValue'] = this.setValue
+      this.slotProps['getValue'] = this.getValue
+      this.slotProps['initComponent'] =this.initComponent
+    },
+    methods:{
+      change(e){
+        this.mydq = e
+        this.slotProps.value = e
+      },
+      setValue(value){
+        this.slotProps.value = value
+        this.mydq = this.slotProps.value
+      },
+      getValue(){
+        return this.slotProps.value
+      },
+      initComponent(originalValue){
+        this.slotProps.value = originalValue
+        this.mydq = this.slotProps.value
       }
     }
   }
 </script>
+<style lang="scss" scoped>
+.editorsSel{
+  &.el-select{
+    height: 100%;
+    ::v-deep
+    .el-input{
+      height: 100%;
+      .el-input__inner{
+        height: 100%;
+        width: 100%;
+        padding: 0 8px;
+        border: none;
+        line-height:1;
+        box-sizing: border-box;
+      }
+      .el-input__suffix{
+        .el-input__icon{
+          line-height:1;
+        }
+      }
+    }
+  }
+}
+</style>

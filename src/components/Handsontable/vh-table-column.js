@@ -68,6 +68,7 @@ export default {
     if(props.data=='SECURITY_CODE'){
       props['editor']= selectedit
       props['selectOptions']= ['option1', 'option2', 'option3']
+      props['editorSlots'] = this.$scopedSlots.editors
     }
 
     /**

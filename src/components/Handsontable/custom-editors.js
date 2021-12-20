@@ -1,84 +1,51 @@
 import Handsontable from 'handsontable'
 import Vue from 'vue'
-import elselect from './select.vue'
 
-class elCheckEditor extends Handsontable.editors.BaseEditor {
+class CustomEditors extends Handsontable.editors.BaseEditor {
   init() {
-    this.select = this.hot.rootDocument.createElement('SELECT');
-    // this.select = this.hot.rootDocument.createElement('div');
-    Handsontable.dom.addClass(this.select, 'htSelectEditor');
-    this.select.style.display = 'none';
+    this.customDom = this.hot.rootDocument.createElement('div');
+    Handsontable.dom.addClass(this.customDom, 'htSelectEditor');
+    this.customDom.style.display = 'none';
 
-    // const deidom = document.createElement('div')
-    // this.select.appendChild(deidom)
-    // Attach node to DOM, by appending it to the container holding the table
-    this.hot.rootElement.appendChild(this.select);
-    // new Vue({
-    //   render: function (createElement) {
-    //     return createElement(
-    //       'div',
-    //       [elselect]
-    //     )
-    //   }
-    // }).$mount(deidom)
-
-    // new Vue({
-    //   el:deidom,
-    //   render: h => h(elselect)
-    // })
+    this.deidom = document.createElement('div')
+    this.customDom.appendChild(this.deidom)
+    this.hot.rootElement.appendChild(this.customDom);
   }
 
   prepare(row, col, prop, td, originalValue, cellProperties) {
     // Remember to invoke parent's method
     super.prepare(row, col, prop, td, originalValue, cellProperties);
-  
-    const selectOptions = this.cellProperties.selectOptions;
-    let options;
-  
-    if (typeof selectOptions === 'function') {
-      options = this.prepareOptions(selectOptions(this.row, this.col, this.prop));
-    } else {
-      options = this.prepareOptions(selectOptions);
-    }
-  
-    Handsontable.dom.empty(this.select);
-  
-    Handsontable.helper.objectEach(options, (value, key) => {
-      const optionElement = this.hot.rootDocument.createElement('OPTION');
-      optionElement.value = key;
-  
-      Handsontable.dom.fastInnerHTML(optionElement, value);
-      this.select.appendChild(optionElement);
-    });
-  }
-
-  prepareOptions(optionsToPrepare) {
-    let preparedOptions = {};
-  
-    if (Array.isArray(optionsToPrepare)) {
-      for (let i = 0, len = optionsToPrepare.length; i < len; i++) {
-        preparedOptions[optionsToPrepare[i]]=optionsToPrepare[i];
+    this.customDom.style.height=td.clientHeight+'px'
+    this.customDom.style.width=td.clientWidth+'px'
+    let node =cellProperties.editorSlots(this)
+    this.tyyyt = new Vue({
+      render: function (createElement) {
+        return createElement(
+          'div',
+          {
+            style:{
+              height: '100%'
+            }
+          },
+          node
+        )
       }
-  
-    } else if (typeof optionsToPrepare === 'object') {
-      preparedOptions=optionsToPrepare;
-    }
-  
-    return preparedOptions;
+    }).$mount(this.deidom)
+    // this.initComponent(originalValue)
   }
 
-  getValue() {
-    return this.select.value;
-  }
+  // getValue() {
+  //   return this.customDom.value;
+  // }
   
-  setValue(value) {
-    this.select.value = value;
-  }
+  // setValue(value) {
+  //   this.customDom.value = value;
+  // }
   
   open() {
     this._opened = true;
     this.refreshDimensions();
-    this.select.style.display = '';
+    this.customDom.style.display = '';
   }
   
   refreshDimensions() {
@@ -128,12 +95,12 @@ class elCheckEditor extends Handsontable.editors.BaseEditor {
       editLeft += 1;
     }
   
-    const selectStyle = this.select.style;
+    const selectStyle = this.customDom.style;
   
     if (cssTransformOffset && cssTransformOffset !== -1) {
       selectStyle[cssTransformOffset[0]] = cssTransformOffset[1];
     } else {
-      Handsontable.dom.resetCssTransform(this.select);
+      Handsontable.dom.resetCssTransform(this.customDom);
     }
   
     const cellComputedStyle = Handsontable.dom.getComputedStyle(this.TD, this.hot.rootWindow);
@@ -163,25 +130,25 @@ class elCheckEditor extends Handsontable.editors.BaseEditor {
           row: this.row,
           col: this.col
         });
-        this.select.style.zIndex = 101;
+        this.customDom.style.zIndex = 101;
       break;
       case 'corner':
         editedCell = wtOverlays.topLeftCornerOverlay.clone.wtTable.getCell({
           row: this.row,
           col: this.col
         });
-        this.select.style.zIndex = 103;
+        this.customDom.style.zIndex = 103;
         break;
       case 'left':
         editedCell = wtOverlays.leftOverlay.clone.wtTable.getCell({
           row: this.row,
           col: this.col
         });
-        this.select.style.zIndex = 102;
+        this.customDom.style.zIndex = 102;
         break;
       default:
         editedCell = this.hot.getCell(this.row, this.col);
-        this.select.style.zIndex = '';
+        this.customDom.style.zIndex = '';
         break;
     }
   
@@ -189,14 +156,13 @@ class elCheckEditor extends Handsontable.editors.BaseEditor {
   }
   
   focus() {
-    this.select.focus();
+    this.customDom.focus();
   }
   
   close() {
     this._opened = false;
-    this.select.style.display = 'none';
+    this.customDom.style.display = 'none';
   }
-  
 }
 
-export default elCheckEditor
+export default CustomEditors
