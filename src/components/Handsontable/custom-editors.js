@@ -6,9 +6,6 @@ class CustomEditors extends Handsontable.editors.BaseEditor {
     this.customDom = this.hot.rootDocument.createElement('div');
     Handsontable.dom.addClass(this.customDom, 'htSelectEditor');
     this.customDom.style.display = 'none';
-
-    this.deidom = document.createElement('div')
-    this.customDom.appendChild(this.deidom)
     this.hot.rootElement.appendChild(this.customDom);
   }
 
@@ -17,8 +14,13 @@ class CustomEditors extends Handsontable.editors.BaseEditor {
     super.prepare(row, col, prop, td, originalValue, cellProperties);
     this.customDom.style.height=td.clientHeight+'px'
     this.customDom.style.width=td.clientWidth+'px'
-    let node =cellProperties.editorSlots(this)
-    this.tyyyt = new Vue({
+
+    Handsontable.dom.empty(this.customDom)
+    this.deidom = document.createElement('div')
+    this.customDom.appendChild(this.deidom)
+
+    const node =cellProperties.editorSlots(this)
+    new Vue({
       render: function (createElement) {
         return createElement(
           'div',
@@ -31,7 +33,6 @@ class CustomEditors extends Handsontable.editors.BaseEditor {
         )
       }
     }).$mount(this.deidom)
-    // this.initComponent(originalValue)
   }
 
   // getValue() {

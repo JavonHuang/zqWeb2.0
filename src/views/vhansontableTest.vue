@@ -1,25 +1,34 @@
 <template>
   <div>
+    <el-button v-on:click="handelGetData()" size="small">获取数据</el-button>
     <pageVHandsontable
+      ref="page"
       :url="'/gzList/getGzList'"
       :nestedHeaders="nestedHeaders"
       :manualColumnResize="true"
       :default-sort="{data:'CLOSE_PRICE',sort:'asc'}"
       :fixedRowsBottom="1"
-      :countFixedRowsBottom="1"
+      :countFixedRowsBottom="true"
       :fixedColumnsLeft="0"
       :columnsFooter="columnsFooter"
       v-on:selection-change="selectionChange"
       >
       <VhTableColumn type="selection"></VhTableColumn>
-      <VhTableColumn type="text" data="SECURITY_CODE" :readOnly="false" title="代码" width="120" :show-overflow-tooltip="true">
+      <VhTableColumn type="text" data="SECURITY_NAME" :readOnly="false" title="代码名" width="200" :show-overflow-tooltip="true">
         <template slot="editors" slot-scope="slotProps">
           <myselect :slotProps="slotProps"></myselect>
         </template>
       </VhTableColumn>
-      <VhTableColumn type="text" data="CLOSE_PRICE" :sortable="true" :readOnly="true" title="收价" width="180"></VhTableColumn>
-      <VhTableColumn type="text" data="CHANGE_RATE" :sortable="true" :readOnly="true" title="波动" width="180"></VhTableColumn>
-      <VhTableColumn type="text" data="TRADE_DATE" :sortable="true" :readOnly="true" width="180" title="日期">
+      <VhTableColumn type="text" data="CLOSE_PRICE" :sortable="true" title="收价" width="200">
+        <template slot="editors" slot-scope="slotProps">
+          <vhInput :slotProps="slotProps"></vhInput>
+        </template>
+      </VhTableColumn>
+      <VhTableColumn type="text" data="CHANGE_RATE" :sortable="true" :readOnly="true" title="波动" width="200"></VhTableColumn>
+      <VhTableColumn type="text" data="TRADE_DATE" :sortable="true" width="200" title="日期">
+        <template slot="editors" slot-scope="slotProps">
+          <vhdate :slotProps="slotProps"></vhdate>
+        </template>
         <template slot="header" slot-scope="slotProps">
           <div>
             <div>{{slotProps.columns.title}}</div>
@@ -57,25 +66,21 @@
 import moment from 'moment'
 import pageVHandsontable from './../components/handsontable/pageVHandsontable'
 import VhTableColumn from './../components/handsontable/vh-table-column'
-import myselect from './../components/handsontable/select'
+import myselect from './hansonEditor/vhSelect'
+import vhInput from './hansonEditor/vhInput'
+import vhdate from './hansonEditor/vhdate'
 export default {
   components:{
     pageVHandsontable,
     VhTableColumn,
-    myselect
+    myselect,
+    vhInput,
+    vhdate
   },
   data(){
     return{
       nestedHeaders:['A', { label: this.test(), colspan: 2 },'测试',{ label: '合并表头', colspan: 2 },{ label: '合并第二', colspan: 2 }],
       columnsFooter:{},
-      mytest:[{
-          value: '000750',
-          label: '过海'
-        }, {
-          value: '600326',
-          label: '西藏天路'
-        }],
-        hheh:null
     }
   },
   mounted(){
@@ -106,6 +111,9 @@ export default {
     },
     changew(){
       alert('9898')
+    },
+    handelGetData(){
+      console.log(this.$refs.page.getData())
     }
   }
 }

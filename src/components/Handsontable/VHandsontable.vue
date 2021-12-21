@@ -38,7 +38,7 @@ export default {
     rowHeights: {
       // eslint-disable-next-line vue/require-prop-type-constructor
       type: Number | String,
-      default: 30
+      default: 40
       // 表格行高
     },
     colWidths: {
@@ -88,8 +88,8 @@ export default {
       default: null
     },
     countFixedRowsBottom:{
-      type: Number,
-      default: null
+      type: Boolean,
+      default: false
     },
     columnsFooter:{
       type: Object,
@@ -323,6 +323,9 @@ export default {
       })
       this.$emit('selection-change',selectAll?list:[])
       this.hot.loadData(list)
+    },
+    getData(){
+      return this.hot.getSourceData()
     }
   }
 }

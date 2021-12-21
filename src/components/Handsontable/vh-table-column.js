@@ -1,7 +1,7 @@
 import Handsontable from 'handsontable'
 import VhTableColumnSort from './VhTableColumnSort.vue'
 import VhTableColumnSelect from './VhTableColumnSelect.vue'
-import selectedit from './custom-editors'
+import CustomEditors from './custom-editors'
 import Vue from 'vue'
 import {generateUUID} from './store/group'
 export default {
@@ -65,9 +65,8 @@ export default {
       owner.store.commit('insertOperateColumn', props.data)
     }
 
-    if(props.data=='SECURITY_CODE'){
-      props['editor']= selectedit
-      props['selectOptions']= ['option1', 'option2', 'option3']
+    if(this.$scopedSlots.editors){
+      props['editor']=CustomEditors
       props['editorSlots'] = this.$scopedSlots.editors
     }
 

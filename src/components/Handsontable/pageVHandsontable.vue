@@ -97,6 +97,9 @@ export default {
         prop: column.data
       }
       that.getDataSource()
+    },
+    getData(){
+      return this.$refs.handsontableDom.getData()
     }
   }
 }

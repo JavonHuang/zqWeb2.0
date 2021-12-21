@@ -1,5 +1,5 @@
 <template>
-  <el-select :popper-append-to-body="false" class="editorsSel" v-on:change="change" v-model="mydq" placeholder="请选择">
+  <el-select :popper-append-to-body="false" class="editorsSel" v-on:change="change" v-model="value" placeholder="请选择">
     <el-option
       v-for="item in options"
       :key="item.value"
@@ -24,31 +24,29 @@
           value: '600326',
           label: '西藏天路'
         }],
-        mydq: null
+        value: null
       }
     },
     created(){
-      this.mydq = this.slotProps.originalValue
-      console.log(this.mydq)
       this.slotProps['setValue'] = this.setValue
       this.slotProps['getValue'] = this.getValue
-      this.slotProps['initComponent'] =this.initComponent
     },
     methods:{
       change(e){
-        this.mydq = e
-        this.slotProps.value = e
+        let obj = this.options.find(item=>item.value==e)
+        this.value = obj.value
       },
-      setValue(value){
-        this.slotProps.value = value
-        this.mydq = this.slotProps.value
+      setValue(e){
+        //获取row的值，设置下拉默认选中值
+        let SECURITY_CODE = this.slotProps.hot.getDataAtRowProp(this.slotProps.row,'SECURITY_CODE')
+        let obj = this.options.find(item=>item.value==SECURITY_CODE)
+        this.value = obj.value
       },
       getValue(){
-        return this.slotProps.value
-      },
-      initComponent(originalValue){
-        this.slotProps.value = originalValue
-        this.mydq = this.slotProps.value
+        let obj = this.options.find(item=>item.value==this.value)
+        //由于下拉显示的label和value是不一样的字段，这里需要设置对应的源数据值
+        this.slotProps.hot.setSourceDataAtCell(this.slotProps.row,'SECURITY_CODE',obj.value)
+        return obj.label
       }
     }
   }
